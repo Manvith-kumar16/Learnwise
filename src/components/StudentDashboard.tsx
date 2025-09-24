@@ -14,6 +14,7 @@ import {
   BarChart3,
   CheckCircle
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface StudentDashboardProps {
   student: {
@@ -25,6 +26,7 @@ interface StudentDashboardProps {
 }
 
 export const StudentDashboard = ({ student }: StudentDashboardProps) => {
+  const navigate = useNavigate();
   const topics = [
     {
       name: "Quantitative Aptitude",
@@ -156,6 +158,7 @@ export const StudentDashboard = ({ student }: StudentDashboardProps) => {
                       variant="outline"
                       size="sm"
                       className="ml-13 btn-gradient"
+                      onClick={() => navigate('/practice')}
                     >
                       <Play className="w-4 h-4 mr-2" />
                       Continue Practice
@@ -191,7 +194,7 @@ export const StudentDashboard = ({ student }: StudentDashboardProps) => {
                       <Badge variant="outline" className="text-xs">
                         {plan.estimated}
                       </Badge>
-                      <Button size="sm" className="btn-gradient">
+                      <Button size="sm" className="btn-gradient" onClick={() => navigate('/practice')}>
                         Start
                       </Button>
                     </div>
@@ -233,15 +236,15 @@ export const StudentDashboard = ({ student }: StudentDashboardProps) => {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full btn-gradient">
+                <Button className="w-full btn-gradient" onClick={() => navigate('/practice')}>
                   <Play className="w-4 h-4 mr-2" />
                   Quick Practice (10 min)
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={() => navigate('/teacher')}>
                   <BarChart3 className="w-4 h-4 mr-2" />
                   View Detailed Report
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={() => navigate('/practice')}>
                   <Target className="w-4 h-4 mr-2" />
                   Set Learning Goals
                 </Button>

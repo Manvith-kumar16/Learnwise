@@ -1,4 +1,5 @@
 import { StudentDashboard } from "@/components/StudentDashboard";
+import { Navigation } from "@/components/Navigation";
 
 const Dashboard = () => {
   const studentData = {
@@ -8,7 +9,18 @@ const Dashboard = () => {
     level: "Advanced"
   };
 
-  return <StudentDashboard student={studentData} />;
+  const userData = {
+    name: "Alex Johnson", 
+    role: "student" as const,
+    notifications: 3
+  };
+
+  return (
+    <>
+      <Navigation user={userData} />
+      <StudentDashboard student={studentData} />
+    </>
+  );
 };
 
 export default Dashboard;
