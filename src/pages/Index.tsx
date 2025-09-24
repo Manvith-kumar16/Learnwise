@@ -12,8 +12,10 @@ import {
   ArrowRight,
   Sparkles
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Navigation */}
@@ -25,10 +27,10 @@ const Index = () => {
           <span className="font-bold text-xl gradient-text">AdaptiveAce</span>
         </div>
         <div className="flex items-center space-x-4">
-          <Button variant="ghost">Features</Button>
-          <Button variant="ghost">About</Button>
-          <Button variant="outline">Sign In</Button>
-          <Button className="btn-gradient">Get Started</Button>
+          <Button variant="ghost" onClick={() => navigate('#features')}>Features</Button>
+          <Button variant="ghost" onClick={() => navigate('#about')}>About</Button>
+          <Button variant="outline" onClick={() => navigate('/dashboard')}>Sign In</Button>
+          <Button className="btn-gradient" onClick={() => navigate('/dashboard')}>Get Started</Button>
         </div>
       </nav>
 
@@ -51,11 +53,11 @@ const Index = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in [animation-delay:400ms]">
-            <Button size="lg" className="btn-gradient text-lg px-8 py-4">
+            <Button size="lg" className="btn-gradient text-lg px-8 py-4" onClick={() => navigate('/dashboard')}>
               Start Learning Free
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-4">
+            <Button size="lg" variant="outline" className="text-lg px-8 py-4" onClick={() => navigate('/practice')}>
               Watch Demo
             </Button>
           </div>
@@ -175,7 +177,7 @@ const Index = () => {
           <p className="text-xl mb-8 text-primary-foreground/90">
             Join thousands of students who've accelerated their academic success with AdaptiveAce
           </p>
-          <Button size="lg" variant="outline" className="text-lg px-8 py-4 bg-primary-foreground text-primary hover:bg-primary-foreground/90">
+          <Button size="lg" variant="outline" className="text-lg px-8 py-4 bg-primary-foreground text-primary hover:bg-primary-foreground/90" onClick={() => navigate('/dashboard')}>
             Start Your Free Trial
           </Button>
         </div>
