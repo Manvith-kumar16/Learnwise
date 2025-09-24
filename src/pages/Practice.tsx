@@ -65,7 +65,7 @@ const Practice = () => {
       } else {
         setIsSessionComplete(true);
       }
-    }, 2000);
+    }, 1500);
   };
 
   const restartSession = () => {

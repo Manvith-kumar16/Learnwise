@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +41,14 @@ export const QuestionCard = ({
   const [showHint, setShowHint] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(timeLimit);
 
+  // Reset state when question changes
+  useEffect(() => {
+    setSelectedOption(null);
+    setShowResult(false);
+    setShowHint(false);
+    setTimeRemaining(timeLimit);
+  }, [question.id, timeLimit]);
+
   const difficultyColors = {
     very_easy: "bg-success text-success-foreground",
     easy: "bg-warning text-warning-foreground", 
@@ -59,10 +67,10 @@ export const QuestionCard = ({
     const isCorrect = selectedOption === question.answer;
     setShowResult(true);
     
-    // Trigger animation based on result
+    // Trigger progression after brief animation
     setTimeout(() => {
       onAnswer(selectedOption, isCorrect);
-    }, 2000);
+    }, 1500);
   };
 
   const progressPercentage = ((timeLimit - timeRemaining) / timeLimit) * 100;
@@ -203,12 +211,9 @@ export const QuestionCard = ({
           )}
           
           {showResult && (
-            <Button
-              onClick={() => window.location.reload()}
-              className="btn-gradient ml-auto"
-            >
-              Next Question
-            </Button>
+            <div className="ml-auto text-sm text-muted-foreground animate-pulse">
+              Moving to next question...
+            </div>
           )}
         </div>
       </CardContent>
