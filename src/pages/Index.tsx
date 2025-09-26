@@ -19,7 +19,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Navigation */}
-      <nav className="flex items-center justify-between px-6 py-4 border-b bg-background/80 backdrop-blur-sm">
+<nav className="flex items-center justify-between px-6 py-4 border-b bg-background/80 backdrop-blur-sm">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
             <Brain className="w-5 h-5 text-primary-foreground" />
@@ -27,8 +27,8 @@ const Index = () => {
           <span className="font-bold text-xl gradient-text">LearnWise</span>
         </div>
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" onClick={() => navigate('#features')}>Features</Button>
-          <Button variant="ghost" onClick={() => navigate('#about')}>About</Button>
+          <Button variant="ghost" onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>Features</Button>
+          <Button variant="ghost" onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}>About</Button>
           <Button variant="outline" onClick={() => navigate('/dashboard')}>Sign In</Button>
           <Button className="btn-gradient" onClick={() => navigate('/dashboard')}>Get Started</Button>
         </div>
@@ -83,7 +83,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="px-6 py-20 bg-background">
+      <section id="features" className="px-6 py-20 bg-background">
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Everything You Need to Excel</h2>
@@ -166,6 +166,18 @@ const Index = () => {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="px-6 py-20 bg-background">
+        <div className="container mx-auto">
+          <div className="max-w-3xl mx-auto text-center space-y-4">
+            <h2 className="text-4xl font-bold">About LearnWise</h2>
+            <p className="text-lg text-muted-foreground">
+              LearnWise is an adaptive, AI-powered learning platform that personalizes practice and provides clear analytics for learners and teachers. It focuses on four fundamentals: Listening, Grasping, Retention, and Application.
+            </p>
           </div>
         </div>
       </section>
