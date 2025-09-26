@@ -312,4 +312,5 @@ MIT License - Build upon this foundation to transform education worldwide!
 
 **Ready to revolutionize learning? Let's make education adaptive, intelligent, and effective for every student!** 🚀
 
-*For questions, demo requests, or collaboration: [Your Contact Information]*
+*For questions, demo requests, or collaboration: [Your Contact Information]*#   l e a r n w i s e  
+ 
