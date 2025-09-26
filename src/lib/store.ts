@@ -150,9 +150,9 @@ export const ensureDefaultClass = (classId = "placement-prep", name = "Placement
       name,
       studentEmails: [
         "shrirakshapacharya@gmail.com",
-        "navami@gmail.com",
+        "navamirbhat@gmail.com",
         "manvithkumar.u@gmail.com",
-        "likhith@email.com",
+        "likhith@gmail.com",
       ],
     };
     saveClass(cls);
@@ -167,7 +167,7 @@ export const ensureDefaultClass = (classId = "placement-prep", name = "Placement
     ],
     diagnostics: { listening: 10, grasping: 10, retention: 10, application: 10 },
   });
-  ensureStudentRecord("navami@gmail.com", "Navami", {
+  ensureStudentRecord("navamirbhat@gmail.com", "Navami", {
     topics: [
       { name: "Quantitative Aptitude", progress: 10, subTopics: ["Percentages", "Ratios", "Profit & Loss"], recentScore: 10, questionsCompleted: 40 },
       { name: "Logical Reasoning & DI", progress: 10, subTopics: ["Data Interpretation", "Puzzles", "Coding-Decoding"], recentScore: 10, questionsCompleted: 32 },

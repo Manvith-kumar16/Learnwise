@@ -65,7 +65,7 @@ export const Navigation = ({ user: userProp }: NavigationProps) => {
             <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
               <Brain className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-xl gradient-text">AdaptiveAce</span>
+            <span className="font-bold text-xl gradient-text">LearnWise</span>
           </div>
 
           {/* Navigation Items */}
