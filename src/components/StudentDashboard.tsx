@@ -15,57 +15,22 @@ import {
   CheckCircle
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useProgress } from "@/context/ProgressContext";
 
-interface StudentDashboardProps {
-  student: {
-    name: string;
-    totalQuestions: number;
-    streak: number;
-    level: string;
-  };
-}
+const iconForTopic = (topicName: string) => {
+  if (topicName.startsWith("Quantitative")) return Brain;
+  if (topicName.startsWith("Logical")) return Target;
+  if (topicName.startsWith("Verbal")) return BookOpen;
+  return Brain;
+};
 
-export const StudentDashboard = ({ student }: StudentDashboardProps) => {
+export const StudentDashboard = () => {
   const navigate = useNavigate();
-  const topics = [
-    {
-      name: "Quantitative Aptitude",
-      progress: 10,
-      subTopics: ["Percentages", "Ratios", "Profit & Loss"],
-      recentScore: 10,
-      questionsCompleted: 156,
-      icon: Brain
-    },
-    {
-      name: "Logical Reasoning & DI",
-      progress: 60,
-      subTopics: ["Data Interpretation", "Puzzles", "Coding-Decoding"],
-      recentScore: 72,
-      questionsCompleted: 98,
-      icon: Target
-    },
-    {
-      name: "Verbal Ability & RC",
-      progress: 85,
-      subTopics: ["Reading Comprehension", "Grammar", "Vocabulary"],
-      recentScore: 91,
-      questionsCompleted: 134,
-      icon: BookOpen
-    }
-  ];
+  const { student, topics, diagnostics, todaysPlan } = useProgress();
 
-  const diagnostics = [
-    { name: "Listening", score: 82, color: "success" as const },
-    { name: "Grasping", score: 76, color: "primary" as const },
-    { name: "Retention", score: 88, color: "success" as const },
-    { name: "Application", score: 71, color: "warning" as const }
-  ];
-
-  const todaysPlan = [
-    { topic: "Percentages", questions: 15, difficulty: "Adaptive", estimated: "20 min" },
-    { topic: "Data Interpretation", questions: 10, difficulty: "Moderate", estimated: "25 min" },
-    { topic: "Reading Comprehension", questions: 5, difficulty: "Difficult", estimated: "15 min" }
-  ];
+  const studyTime = student?.studyTimeTodayMinutes ?? 0;
+  const overall = (student?.overallProgress ?? 0) || (topics.length ? Math.round(topics.reduce((a, t) => a + (t.progress || 0), 0) / topics.length) : 0);
+  const questionsCompleted = (student?.totalQuestions ?? 0) || (topics.length ? topics.reduce((a, t) => a + (t.questionsCompleted || 0), 0) : 0);
 
   return (
     <div className="min-h-screen bg-gradient-subtle p-6">
@@ -73,16 +38,16 @@ export const StudentDashboard = ({ student }: StudentDashboardProps) => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, {student.name}! 👋</h1>
+            <h1 className="text-3xl font-bold">Welcome back, {student?.name || 'Student'}! 👋</h1>
             <p className="text-muted-foreground mt-1">Ready to continue your learning journey?</p>
           </div>
           <div className="flex items-center space-x-4">
             <Badge variant="outline" className="flex items-center space-x-1">
               <Award className="w-4 h-4" />
-              <span>{student.level}</span>
+              <span>{student?.level || 'Beginner'}</span>
             </Badge>
             <Badge className="bg-gradient-primary text-primary-foreground">
-              🔥 {student.streak} day streak
+              🔥 {student?.streak ?? 0} day streak
             </Badge>
           </div>
         </div>
@@ -90,10 +55,10 @@ export const StudentDashboard = ({ student }: StudentDashboardProps) => {
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
-            { label: "Questions Completed", value: student.totalQuestions, icon: CheckCircle, color: "text-success" },
-            { label: "Current Streak", value: `${student.streak} days`, icon: Calendar, color: "text-primary" },
-            { label: "Study Time Today", value: "45 min", icon: Clock, color: "text-warning" },
-            { label: "Overall Progress", value: "73%", icon: TrendingUp, color: "text-success" }
+            { label: "Questions Completed", value: questionsCompleted, icon: CheckCircle, color: "text-success" },
+            { label: "Current Streak", value: `${student?.streak ?? 0} days`, icon: Calendar, color: "text-primary" },
+            { label: "Study Time Today", value: `${studyTime} min`, icon: Clock, color: "text-warning" },
+            { label: "Overall Progress", value: `${overall}%`, icon: TrendingUp, color: "text-success" }
           ].map((stat, index) => (
             <Card key={index} className="card-elevated border-0">
               <CardContent className="p-4">
@@ -120,51 +85,54 @@ export const StudentDashboard = ({ student }: StudentDashboardProps) => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {topics.map((topic, index) => (
-                  <div key={index} className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center">
-                          <topic.icon className="w-5 h-5 text-primary-foreground" />
+                {topics.map((topic, index) => {
+                  const Icon = iconForTopic(topic.name);
+                  return (
+                    <div key={index} className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center">
+                            <Icon className="w-5 h-5 text-primary-foreground" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold">{topic.name}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {topic.questionsCompleted} questions completed
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-semibold">{topic.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {topic.questionsCompleted} questions completed
-                          </p>
+                        <div className="flex items-center space-x-4">
+                          <div className="text-right">
+                            <p className="font-semibold text-success">Recent: {topic.recentScore}%</p>
+                          </div>
+                          <ProgressRing 
+                            progress={topic.progress} 
+                            size="sm"
+                            showPercentage={false}
+                          />
                         </div>
                       </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="text-right">
-                          <p className="font-semibold text-success">Recent: {topic.recentScore}%</p>
-                        </div>
-                        <ProgressRing 
-                          progress={topic.progress} 
-                          size="sm"
-                          showPercentage={false}
-                        />
+                      
+                      <div className="flex flex-wrap gap-2 ml-13">
+                        {topic.subTopics.map((subTopic, subIndex) => (
+                          <Badge key={subIndex} variant="outline" className="text-xs">
+                            {subTopic}
+                          </Badge>
+                        ))}
                       </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="ml-13 btn-gradient"
+                        onClick={() => navigate('/practice')}
+                      >
+                        <Play className="w-4 h-4 mr-2" />
+                        Continue Practice
+                      </Button>
                     </div>
-                    
-                    <div className="flex flex-wrap gap-2 ml-13">
-                      {topic.subTopics.map((subTopic, subIndex) => (
-                        <Badge key={subIndex} variant="outline" className="text-xs">
-                          {subTopic}
-                        </Badge>
-                      ))}
-                    </div>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="ml-13 btn-gradient"
-                      onClick={() => navigate('/practice')}
-                    >
-                      <Play className="w-4 h-4 mr-2" />
-                      Continue Practice
-                    </Button>
-                  </div>
-                ))}
+                  );
+                })}
               </CardContent>
             </Card>
 
@@ -212,21 +180,25 @@ export const StudentDashboard = ({ student }: StudentDashboardProps) => {
                 <CardTitle>Learning Diagnostics</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {diagnostics.map((diagnostic, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{diagnostic.name}</span>
-                      <span className="text-sm font-semibold">{diagnostic.score}%</span>
+                {[{ name: 'Listening', key: 'listening' }, { name: 'Grasping', key: 'grasping' }, { name: 'Retention', key: 'retention' }, { name: 'Application', key: 'application' }].map((d, index) => {
+                  const score = (diagnostics as any)?.[d.key] ?? 0;
+                  const color = score >= 80 ? 'success' : score >= 60 ? 'warning' : 'primary';
+                  return (
+                    <div key={index} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">{d.name}</span>
+                        <span className="text-sm font-semibold">{score}%</span>
+                      </div>
+                      <ProgressRing
+                        progress={score}
+                        size="sm"
+                        color={color as any}
+                        showPercentage={false}
+                        className="w-full"
+                      />
                     </div>
-                    <ProgressRing
-                      progress={diagnostic.score}
-                      size="sm"
-                      color={diagnostic.color}
-                      showPercentage={false}
-                      className="w-full"
-                    />
-                  </div>
-                ))}
+                  );
+                })}
               </CardContent>
             </Card>
 

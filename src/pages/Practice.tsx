@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import {
   RotateCcw
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useProgress } from "@/context/ProgressContext";
 
 // Sample question data - in real app this would come from API
 const sampleQuestions = [
@@ -741,6 +742,7 @@ const sampleQuestions = [
 
 const Practice = () => {
   const navigate = useNavigate();
+  const { completeSession } = useProgress();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [sessionStats, setSessionStats] = useState({
     correct: 0,
@@ -769,6 +771,13 @@ const Practice = () => {
       }
     }, 1500);
   };
+
+  useEffect(() => {
+    if (isSessionComplete) {
+      const total = sessionStats.correct + sessionStats.incorrect;
+      completeSession({ correct: sessionStats.correct, incorrect: sessionStats.incorrect, timeMinutes: total * 2 });
+    }
+  }, [isSessionComplete]);
 
   const restartSession = () => {
     setCurrentQuestionIndex(0);

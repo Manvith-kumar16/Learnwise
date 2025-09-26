@@ -7,32 +7,13 @@ import {
   Users, 
   TrendingUp, 
   AlertTriangle, 
-  BookOpen, 
   FileText,
   Download,
   Eye,
   BarChart3,
   Clock,
-  Target,
-  CheckCircle,
-  XCircle
 } from "lucide-react";
-
-interface Student {
-  id: string;
-  name: string;
-  email: string;
-  overallProgress: number;
-  recentScore: number;
-  timeSpent: number;
-  needsAttention: boolean;
-  diagnostics: {
-    listening: number;
-    grasping: number;
-    retention: number;
-    application: number;
-  };
-}
+import { getClassStudents } from "@/lib/store";
 
 interface TeacherDashboardProps {
   classData: {
@@ -44,54 +25,13 @@ interface TeacherDashboardProps {
 }
 
 export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
-  const students: Student[] = [
-    {
-      id: "1",
-      name: "Shriraksha P Acharya",
-      email: "shrirakshapacharya@gmail.com",
-      overallProgress: 10,
-      recentScore: 10,
-      timeSpent: 10,
-      needsAttention: false,
-      diagnostics: { listening: 10, grasping: 10, retention: 10, application: 10 }
-    },
-    {
-      id: "2", 
-      name: "Navami",
-      email: "navami@gmail.com",
-      overallProgress: 10,
-      recentScore: 10,
-      timeSpent: 10,
-      needsAttention: false,
-      diagnostics: { listening: 10, grasping: 10, retention: 10, application: 10 }
-    },
-    {
-      id: "3",
-      name: "Manvith kumar ullal", 
-      email: "manvithkumar.u@gmail.com",
-      overallProgress: 10,
-      recentScore: 10,
-      timeSpent: 10,
-      needsAttention: true,
-      diagnostics: { listening: 65, grasping: 45, retention: 50, application: 40 }
-    },
-    {
-      id: "4",
-      name: "Likhith",
-      email: "likhith@email.com", 
-      overallProgress: 78,
-      recentScore: 85,
-      timeSpent: 110,
-      needsAttention: false,
-      diagnostics: { listening: 82, grasping: 75, retention: 80, application: 75 }
-    }
-  ];
+  const students = getClassStudents();
 
   const classInsights = [
     {
       title: "Class Average",
       value: `${classData.avgProgress}%`,
-      change: "+5%",
+      change: "+0%",
       trend: "up",
       icon: TrendingUp,
       color: "text-success"
@@ -99,43 +39,37 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
     {
       title: "Active Students",
       value: classData.activeStudents,
-      change: "+2",
+      change: "+0",
       trend: "up", 
       icon: Users,
       color: "text-primary"
     },
     {
       title: "Need Attention",
-      value: students.filter(s => s.needsAttention).length,
-      change: "-1",
+      value: students.filter(s => (s.overallProgress ?? 0) < 50).length,
+      change: "",
       trend: "down",
       icon: AlertTriangle,
       color: "text-warning"
     },
     {
       title: "Avg Study Time",
-      value: "95 min",
-      change: "+15 min",
+      value: `${Math.round(
+        students.reduce((acc, s) => acc + (s.studyTimeTodayMinutes || 0), 0) / (students.length || 1)
+      )} min`,
+      change: "",
       trend: "up",
       icon: Clock,
       color: "text-success"
     }
   ];
 
-  const interventionSuggestions = [
-    {
-      student: "Mike Rodriguez",
-      issue: "Low retention scores", 
-      suggestion: "Implement spaced repetition for key concepts",
-      priority: "high"
-    },
-    {
-      student: "Emma Davis",
-      issue: "Slower application speed",
-      suggestion: "Focus on timed practice sessions",
-      priority: "medium"
-    }
-  ];
+  const topicNames = ["Quantitative Aptitude", "Logical Reasoning & DI", "Verbal Ability & RC"] as const;
+  const topicAverages = topicNames.map((name) => {
+    const vals = students.map((s) => s.topics.find((t) => t.name === name)?.progress || 0);
+    const avg = vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
+    return { topic: name, avg, trend: "+0%" };
+  });
 
   return (
     <div className="min-h-screen bg-gradient-subtle p-6">
@@ -202,7 +136,7 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
                         <ProgressRing 
                           progress={student.overallProgress}
                           size="sm"
-                          color={student.needsAttention ? "warning" : "primary"}
+                          color={(student.overallProgress || 0) < 50 ? "warning" : "primary"}
                         />
                         <p className="text-xs font-medium truncate">{student.name.split(' ')[0]}</p>
                       </div>
@@ -217,11 +151,7 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
                   <CardTitle>Topic Performance Overview</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {[
-                    { topic: "Quantitative Aptitude", avg: 78, trend: "+12%" },
-                    { topic: "Logical Reasoning", avg: 72, trend: "+8%" },
-                    { topic: "Verbal Ability", avg: 85, trend: "+15%" }
-                  ].map((topic, index) => (
+                  {topicAverages.map((topic, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">{topic.topic}</p>
@@ -251,12 +181,12 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
                             <ProgressRing 
                               progress={student.overallProgress}
                               size="sm"
-                              color={student.needsAttention ? "warning" : "success"}
+                              color={(student.overallProgress || 0) < 50 ? "warning" : "success"}
                             />
                             <div>
                               <h3 className="font-semibold flex items-center space-x-2">
                                 <span>{student.name}</span>
-                                {student.needsAttention && (
+                                {(student.overallProgress || 0) < 50 && (
                                   <AlertTriangle className="w-4 h-4 text-warning" />
                                 )}
                               </h3>
@@ -268,11 +198,11 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
                         <div className="flex items-center space-x-6">
                           <div className="text-center">
                             <p className="text-sm text-muted-foreground">Recent Score</p>
-                            <p className="font-semibold">{student.recentScore}%</p>
+                            <p className="font-semibold">{student.topics?.[0]?.recentScore ?? 0}%</p>
                           </div>
                           <div className="text-center">
                             <p className="text-sm text-muted-foreground">Time Spent</p>
-                            <p className="font-semibold">{student.timeSpent}min</p>
+                            <p className="font-semibold">{student.studyTimeTodayMinutes ?? 0}min</p>
                           </div>
                           <div className="flex space-x-2">
                             <Button size="sm" variant="outline">
@@ -293,10 +223,10 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
                           <div key={diagIndex} className="text-center">
                             <p className="text-xs text-muted-foreground capitalize mb-1">{key}</p>
                             <ProgressRing 
-                              progress={value}
+                              progress={value as number}
                               size="sm"
                               showPercentage={false}
-                              color={value >= 80 ? "success" : value >= 60 ? "warning" : "error"}
+                              color={(value as number) >= 80 ? "success" : (value as number) >= 60 ? "warning" : "error"}
                             />
                           </div>
                         ))}
@@ -329,10 +259,10 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {[
-                    { metric: "Daily Active Students", value: "89%", trend: "+5%" },
-                    { metric: "Avg Session Duration", value: "28 min", trend: "+12%" },
-                    { metric: "Practice Completion Rate", value: "92%", trend: "+8%" },
-                    { metric: "Question Accuracy", value: "76%", trend: "+15%" }
+                    { metric: "Daily Active Students", value: "--", trend: "" },
+                    { metric: "Avg Session Duration", value: "--", trend: "" },
+                    { metric: "Practice Completion Rate", value: "--", trend: "" },
+                    { metric: "Question Accuracy", value: "--", trend: "" }
                   ].map((metric, index) => (
                     <div key={index} className="flex justify-between items-center">
                       <span className="font-medium">{metric.metric}</span>
@@ -354,19 +284,11 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
                 <CardTitle>AI-Generated Intervention Suggestions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {interventionSuggestions.map((intervention, index) => (
+                {[{ student: "Shriraksha", issue: "Low retention scores", suggestion: "Implement spaced repetition for key concepts", priority: "high" }].map((intervention, index) => (
                   <div key={index} className="p-4 border rounded-lg space-y-3">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold">{intervention.student}</h3>
-                      <Badge 
-                        className={
-                          intervention.priority === "high" ? "bg-error text-error-foreground" :
-                          intervention.priority === "medium" ? "bg-warning text-warning-foreground" :
-                          "bg-success text-success-foreground"
-                        }
-                      >
-                        {intervention.priority} priority
-                      </Badge>
+                      <Badge className="bg-warning text-warning-foreground">{intervention.priority} priority</Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
                       <strong>Issue:</strong> {intervention.issue}
@@ -375,12 +297,8 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
                       <strong>Suggestion:</strong> {intervention.suggestion}
                     </p>
                     <div className="flex space-x-2">
-                      <Button size="sm" className="btn-gradient">
-                        Create Action Plan
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        Send to Parent
-                      </Button>
+                      <Button size="sm" className="btn-gradient">Create Action Plan</Button>
+                      <Button size="sm" variant="outline">Send to Parent</Button>
                     </div>
                   </div>
                 ))}

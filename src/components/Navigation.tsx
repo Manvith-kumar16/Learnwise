@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 interface NavigationProps {
   user?: {
@@ -18,9 +19,11 @@ interface NavigationProps {
   };
 }
 
-export const Navigation = ({ user }: NavigationProps) => {
+export const Navigation = ({ user: userProp }: NavigationProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user: authUser, signOut } = useAuth();
+  const user = userProp || (authUser ? { name: authUser.name, role: authUser.role, notifications: 0 } : undefined);
 
   const navItems = user ? [
     { 
@@ -115,7 +118,7 @@ export const Navigation = ({ user }: NavigationProps) => {
                 </div>
 
                 {/* Logout */}
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={() => { signOut(); navigate('/login'); }}>
                   <LogOut className="w-4 h-4" />
                 </Button>
               </>

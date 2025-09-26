@@ -46,7 +46,7 @@ All colors MUST be HSL.
     --ring: 258 89% 66%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(258 89% 66%), hsl(270 91% 78%));
+    --gradient-primary: linear-gradient(135deg, hsl(258, 61%, 45%), hsl(270 91% 78%));
     --gradient-secondary: linear-gradient(135deg, hsl(210 40% 96%), hsl(220 13% 91%));
     --gradient-hero: linear-gradient(135deg, hsl(258 89% 66%) 0%, hsl(270 91% 78%) 50%, hsl(280 89% 86%) 100%);
     --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 46%));
@@ -110,8 +110,8 @@ All colors MUST be HSL.
     --ring: 270 91% 78%;
 
     /* Dark theme gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(270 91% 78%), hsl(280 91% 88%));
-    --gradient-hero: linear-gradient(135deg, hsl(270 91% 78%) 0%, hsl(280 91% 88%) 50%, hsl(290 85% 92%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(12, 100%, 42%), hsl(60, 100%, 50%));
+    --gradient-hero: linear-gradient(135deg, hsl(272, 23%, 89%) 0%, hsl(280, 55%, 46%) 50%, hsl(290 85% 92%) 100%);
     --gradient-subtle: linear-gradient(180deg, hsl(222.2 84% 4.9%) 0%, hsl(258 89% 8%) 100%);
 
     /* Dark theme shadows */

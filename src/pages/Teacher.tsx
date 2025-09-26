@@ -1,11 +1,14 @@
 import { TeacherDashboard } from "@/components/TeacherDashboard";
+import { ensureDefaultClass, getClassOverview } from "@/lib/store";
 
 const Teacher = () => {
+  ensureDefaultClass();
+  const overview = getClassOverview();
   const classData = {
     name: "Placement preparation",
-    totalStudents: 15,
-    activeStudents: 15,
-    avgProgress: 0
+    totalStudents: overview.totalStudents,
+    activeStudents: overview.activeStudents,
+    avgProgress: overview.avgProgress,
   };
 
   return <TeacherDashboard classData={classData} />;
