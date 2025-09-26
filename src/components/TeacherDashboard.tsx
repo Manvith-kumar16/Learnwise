@@ -47,38 +47,38 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
   const students: Student[] = [
     {
       id: "1",
-      name: "Alex Johnson",
-      email: "alex.j@email.com",
-      overallProgress: 85,
-      recentScore: 92,
-      timeSpent: 120,
+      name: "Shriraksha P Acharya",
+      email: "shrirakshapacharya@gmail.com",
+      overallProgress: 10,
+      recentScore: 10,
+      timeSpent: 10,
       needsAttention: false,
-      diagnostics: { listening: 88, grasping: 82, retention: 90, application: 80 }
+      diagnostics: { listening: 10, grasping: 10, retention: 10, application: 10 }
     },
     {
       id: "2", 
-      name: "Sarah Chen",
-      email: "sarah.c@email.com",
-      overallProgress: 92,
-      recentScore: 88,
-      timeSpent: 95,
+      name: "Navami",
+      email: "navami@gmail.com",
+      overallProgress: 10,
+      recentScore: 10,
+      timeSpent: 10,
       needsAttention: false,
-      diagnostics: { listening: 90, grasping: 94, retention: 89, application: 95 }
+      diagnostics: { listening: 10, grasping: 10, retention: 10, application: 10 }
     },
     {
       id: "3",
-      name: "Mike Rodriguez", 
-      email: "mike.r@email.com",
-      overallProgress: 45,
-      recentScore: 62,
-      timeSpent: 45,
+      name: "Manvith kumar ullal", 
+      email: "manvithkumar.u@gmail.com",
+      overallProgress: 10,
+      recentScore: 10,
+      timeSpent: 10,
       needsAttention: true,
       diagnostics: { listening: 65, grasping: 45, retention: 50, application: 40 }
     },
     {
       id: "4",
-      name: "Emma Davis",
-      email: "emma.d@email.com", 
+      name: "Likhith",
+      email: "likhith@email.com", 
       overallProgress: 78,
       recentScore: 85,
       timeSpent: 110,

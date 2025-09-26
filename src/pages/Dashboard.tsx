@@ -3,16 +3,16 @@ import { Navigation } from "@/components/Navigation";
 
 const Dashboard = () => {
   const studentData = {
-    name: "Alex Johnson",
-    totalQuestions: 342,
-    streak: 7,
+    name: "Shriraksha P Acharya",
+    totalQuestions: 0,
+    streak: 0,
     level: "Advanced"
   };
 
   const userData = {
-    name: "Alex Johnson", 
+    name: "Shriraksha P Acharya", 
     role: "student" as const,
-    notifications: 3
+    notifications: 0
   };
 
   return (

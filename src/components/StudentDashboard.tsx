@@ -30,9 +30,9 @@ export const StudentDashboard = ({ student }: StudentDashboardProps) => {
   const topics = [
     {
       name: "Quantitative Aptitude",
-      progress: 75,
+      progress: 10,
       subTopics: ["Percentages", "Ratios", "Profit & Loss"],
-      recentScore: 85,
+      recentScore: 10,
       questionsCompleted: 156,
       icon: Brain
     },

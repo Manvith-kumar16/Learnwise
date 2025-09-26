@@ -24,7 +24,7 @@ const Index = () => {
           <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
             <Brain className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="font-bold text-xl gradient-text">AdaptiveAce</span>
+          <span className="font-bold text-xl gradient-text">LearnWise</span>
         </div>
         <div className="flex items-center space-x-4">
           <Button variant="ghost" onClick={() => navigate('#features')}>Features</Button>
@@ -45,7 +45,7 @@ const Index = () => {
           
           <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
             Learn Smarter with
-            <span className="gradient-text block mt-2">AdaptiveAce</span>
+            <span className="gradient-text block mt-2">LearnWise</span>
           </h1>
           
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in [animation-delay:200ms]">
@@ -190,9 +190,9 @@ const Index = () => {
             <div className="w-6 h-6 rounded bg-gradient-primary flex items-center justify-center">
               <Brain className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="font-semibold gradient-text">AdaptiveAce</span>
+            <span className="font-semibold gradient-text">LearnWise</span>
           </div>
-          <p>© 2024 AdaptiveAce. Empowering learners with AI-driven education.</p>
+          <p>© 2025 LearnWise. Empowering learners with AI-driven education.</p>
         </div>
       </footer>
     </div>
