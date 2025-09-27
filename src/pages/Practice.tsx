@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,7 @@ import {
   XCircle,
   RotateCcw
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useProgress } from "@/context/ProgressContext";
 
 // Sample question data - in real app this would come from API
@@ -740,10 +740,80 @@ const sampleQuestions = [
   }
 ];
 
+// Helpers to build 10 parts of 10 mixed-difficulty questions (Quantitative Aptitude)
+const normalizeDifficulty = (d: string) => {
+  const s = String(d || "").toLowerCase();
+  if (s.includes("moderate")) return "moderate" as const;
+  if (s.includes("difficult") || s.includes("hard")) return "hard" as const;
+  return "easy" as const; // treat very_easy/easy as easy
+};
+
+const shuffle = <T,>(arr: T[]): T[] => {
+  return [...arr]
+    .map((x) => ({ x, r: Math.random() }))
+    .sort((a, b) => a.r - b.r)
+    .map((o) => o.x);
+};
+
+const buildQuantParts = (questions: any[], partsCount = 10, perPart = 10) => {
+  const withLevel = questions.map((q) => ({ ...q, level: normalizeDifficulty((q as any).difficulty) }));
+  const pools: Record<string, any[]> = {
+    easy: shuffle(withLevel.filter((q) => q.level === "easy")),
+    moderate: shuffle(withLevel.filter((q) => q.level === "moderate")),
+    hard: shuffle(withLevel.filter((q) => q.level === "hard")),
+  };
+  const originals = {
+    easy: [...pools.easy],
+    moderate: [...pools.moderate],
+    hard: [...pools.hard],
+  };
+
+  // Desired mix per part; duplicates may occur across parts if pools are smaller than needed
+  const distribution = { easy: 4, moderate: 3, hard: 3 };
+
+  const take = (bucket: "easy" | "moderate" | "hard", n: number, usedIds: Set<string>) => {
+    const res: any[] = [];
+    // Try to take unique IDs within a part
+    while (res.length < n) {
+      if (pools[bucket].length === 0) {
+        pools[bucket] = shuffle([...originals[bucket]]);
+      }
+      const candidate = pools[bucket].pop();
+      if (!candidate) break;
+      if (!usedIds.has(candidate.id)) {
+        res.push(candidate);
+        usedIds.add(candidate.id);
+      }
+    }
+    // If still short (not enough unique in pool), allow duplicates within part from originals
+    while (res.length < n && originals[bucket].length > 0) {
+      const candidate = originals[bucket][Math.floor(Math.random() * originals[bucket].length)];
+      res.push(candidate);
+    }
+    return res;
+  };
+
+  const parts: any[][] = [];
+  for (let i = 0; i < partsCount; i++) {
+    const used = new Set<string>();
+    let part: any[] = [];
+    part = part
+      .concat(take("easy", distribution.easy, used))
+      .concat(take("moderate", distribution.moderate, used))
+      .concat(take("hard", distribution.hard, used));
+    parts.push(shuffle(part).slice(0, perPart));
+  }
+  return parts;
+};
+
 const Practice = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { completeSession } = useProgress();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentPartIndex, setCurrentPartIndex] = useState(0);
+  const parts = useMemo(() => buildQuantParts(sampleQuestions, 10, 10), []);
+  const questions = parts[currentPartIndex] || [];
   const [sessionStats, setSessionStats] = useState({
     correct: 0,
     incorrect: 0,
@@ -752,7 +822,18 @@ const Practice = () => {
   });
   const [isSessionComplete, setIsSessionComplete] = useState(false);
 
-  const currentQuestion = sampleQuestions[currentQuestionIndex];
+  const currentQuestion = questions[currentQuestionIndex];
+
+  // Persist per-part progress in localStorage so the parts list can show it
+  const PROGRESS_KEY = "qa_part_progress";
+  const setPartProgress = (part: number, percent: number) => {
+    try {
+      const raw = localStorage.getItem(PROGRESS_KEY);
+      const map = raw ? JSON.parse(raw) : {};
+      map[part] = Math.max(map[part] || 0, percent);
+      localStorage.setItem(PROGRESS_KEY, JSON.stringify(map));
+    } catch {}
+  };
 
   const handleAnswer = (selectedOption: number, isCorrect: boolean) => {
     setSessionStats(prev => ({
@@ -762,9 +843,13 @@ const Practice = () => {
       streak: isCorrect ? prev.streak + 1 : 0
     }));
 
+    // Save progress percentage for this part
+    const pct = Math.round(((currentQuestionIndex + 1) / (questions.length || 1)) * 100);
+    setPartProgress(currentPartIndex, pct);
+
     // Move to next question or complete session
     setTimeout(() => {
-      if (currentQuestionIndex < sampleQuestions.length - 1) {
+      if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1);
       } else {
         setIsSessionComplete(true);
@@ -776,8 +861,27 @@ const Practice = () => {
     if (isSessionComplete) {
       const total = sessionStats.correct + sessionStats.incorrect;
       completeSession({ correct: sessionStats.correct, incorrect: sessionStats.incorrect, timeMinutes: total * 2 });
+      // Mark part as 100% complete
+      setPartProgress(currentPartIndex, 100);
     }
   }, [isSessionComplete]);
+
+  // If a part is specified in the URL, load it initially
+  useEffect(() => {
+    const sp = new URLSearchParams(location.search);
+    const p = Number(sp.get("part"));
+    if (!Number.isNaN(p) && p >= 1 && p <= parts.length) {
+      setCurrentPartIndex(p - 1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Reset when part changes
+  useEffect(() => {
+    setCurrentQuestionIndex(0);
+    setSessionStats({ correct: 0, incorrect: 0, totalTime: 0, streak: 0 });
+    setIsSessionComplete(false);
+  }, [currentPartIndex]);
 
   const restartSession = () => {
     setCurrentQuestionIndex(0);
@@ -862,12 +966,46 @@ const Practice = () => {
             <div>
               <h1 className="font-bold">Quantitative Aptitude • Percentages</h1>
               <p className="text-sm text-muted-foreground">
-                Question {currentQuestionIndex + 1} of {sampleQuestions.length}
+                Question {currentQuestionIndex + 1} of {questions.length}
               </p>
             </div>
           </div>
           
           <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                disabled={currentPartIndex === 0}
+                onClick={() => setCurrentPartIndex((i) => Math.max(0, i - 1))}
+              >
+                Prev Part
+              </Button>
+              <Badge variant="outline" className="rounded-md px-3 py-1 whitespace-nowrap">Part {currentPartIndex + 1} / {parts.length}</Badge>
+              <Button 
+                variant="outline" 
+                size="sm"
+                disabled={currentPartIndex === parts.length - 1}
+                onClick={() => setCurrentPartIndex((i) => Math.min(parts.length - 1, i + 1))}
+              >
+                Next Part
+              </Button>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" onClick={() => navigate('/practice/parts')}>
+                All Parts
+              </Button>
+              <span className="text-xs text-muted-foreground">Jump to</span>
+              <select
+                className="border rounded px-2 py-1 bg-background"
+                value={currentPartIndex}
+                onChange={(e) => setCurrentPartIndex(Number(e.target.value))}
+              >
+                {parts.map((_, idx) => (
+                  <option key={idx} value={idx}>Part {idx + 1}</option>
+                ))}
+              </select>
+            </div>
             <Badge className="bg-gradient-primary text-primary-foreground">
               <Target className="w-4 h-4 mr-1" />
               Adaptive Mode
@@ -884,12 +1022,12 @@ const Practice = () => {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
             <span>Progress</span>
-            <span>{Math.round(((currentQuestionIndex + 1) / sampleQuestions.length) * 100)}%</span>
+            <span>{Math.round(((currentQuestionIndex + 1) / (questions.length || 1)) * 100)}%</span>
           </div>
           <div className="w-full bg-muted rounded-full h-2">
             <div 
               className="bg-gradient-primary h-2 rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${((currentQuestionIndex + 1) / sampleQuestions.length) * 100}%` }}
+              style={{ width: `${((currentQuestionIndex + 1) / (questions.length || 1)) * 100}%` }}
             />
           </div>
         </div>

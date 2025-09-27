@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ProgressRing } from "./ProgressRing";
+import { Progress } from "@/components/ui/progress";
 import { 
   BookOpen, 
   Brain, 
@@ -26,7 +26,7 @@ const iconForTopic = (topicName: string) => {
 
 export const StudentDashboard = () => {
   const navigate = useNavigate();
-  const { student, topics, diagnostics, todaysPlan } = useProgress();
+  const { student, topics, todaysPlan } = useProgress();
 
   const studyTime = student?.studyTimeTodayMinutes ?? 0;
   const overall = (student?.overallProgress ?? 0) || (topics.length ? Math.round(topics.reduce((a, t) => a + (t.progress || 0), 0) / topics.length) : 0);
@@ -74,7 +74,7 @@ export const StudentDashboard = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Main Topics Progress */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="card-elevated border-0">
@@ -101,16 +101,17 @@ export const StudentDashboard = () => {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-4">
-                          <div className="text-right">
-                            <p className="font-semibold text-success">Recent: {topic.recentScore}%</p>
-                          </div>
-                          <ProgressRing 
-                            progress={topic.progress} 
-                            size="sm"
-                            showPercentage={false}
-                          />
+                        <div className="text-right">
+                          <p className="font-semibold text-success">Recent: {topic.recentScore}%</p>
                         </div>
+                      </div>
+
+                      <div className="ml-13">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-muted-foreground">Progress</span>
+                          <span className="text-sm font-semibold">{topic.progress}%</span>
+                        </div>
+                        <Progress value={topic.progress} className="h-2" />
                       </div>
                       
                       <div className="flex flex-wrap gap-2 ml-13">
@@ -173,35 +174,7 @@ export const StudentDashboard = () => {
           </div>
 
           {/* Diagnostics & Sidebar */}
-          <div className="space-y-6">
-            {/* Four Fundamentals */}
-            <Card className="card-elevated border-0">
-              <CardHeader>
-                <CardTitle>Learning Diagnostics</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {[{ name: 'Listening', key: 'listening' }, { name: 'Grasping', key: 'grasping' }, { name: 'Retention', key: 'retention' }, { name: 'Application', key: 'application' }].map((d, index) => {
-                  const score = (diagnostics as any)?.[d.key] ?? 0;
-                  const color = score >= 80 ? 'success' : score >= 60 ? 'warning' : 'primary';
-                  return (
-                    <div key={index} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{d.name}</span>
-                        <span className="text-sm font-semibold">{score}%</span>
-                      </div>
-                      <ProgressRing
-                        progress={score}
-                        size="sm"
-                        color={color as any}
-                        showPercentage={false}
-                        className="w-full"
-                      />
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
-
+          <div className="space-y-6 lg:col-span-2">
             {/* Quick Actions */}
             <Card className="card-elevated border-0">
               <CardHeader>
@@ -216,7 +189,7 @@ export const StudentDashboard = () => {
                   <BarChart3 className="w-4 h-4 mr-2" />
                   View Detailed Report
                 </Button>
-                <Button variant="outline" className="w-full" onClick={() => navigate('/practice')}>
+                <Button variant="outline" className="w-full" onClick={() => navigate('/goals')}>
                   <Target className="w-4 h-4 mr-2" />
                   Set Learning Goals
                 </Button>

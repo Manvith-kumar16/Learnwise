@@ -23,7 +23,7 @@
     --success-foreground: 0 0% 100%;
     --error: 0 84% 60%;              /* Red */
     --error-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;           /* Amber */
+    --warning: 38 92% 50%;   /* Amber / Yellow */
     --warning-foreground: 222 47% 11%;
 
     /* Neutral UI Colors */

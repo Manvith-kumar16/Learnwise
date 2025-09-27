@@ -10,6 +10,7 @@ interface ProgressRingProps {
   color?: "primary" | "success" | "warning" | "error";
 }
 
+
 export const ProgressRing = ({
   progress,
   size = "md",
