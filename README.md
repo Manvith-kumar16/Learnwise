@@ -103,25 +103,10 @@ Learnwise/
 
 ---
 
-## 🤝 Contributing
-
-Contributions are always welcome!
-
-1. Fork the repo
-2. Create a new branch (`feature/YourFeature`)
-3. Commit changes
-4. Push the branch and create a PR
-
----
 
 ## 📜 License
 
 This project is licensed under the **MIT License**.
 See the [LICENSE](./LICENSE) file for details.
 
----
 
-
-
-Do you also want me to add a **“Live Demo” / “Deployed Link”** section (if you plan to host Learnwise on Vercel/Netlify)?
-```
