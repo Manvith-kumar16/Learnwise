@@ -62,9 +62,12 @@ export const Navigation = ({ user: userProp }: NavigationProps) => {
             className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => navigate('/')}
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-              <Brain className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <img 
+              src="/logobg.png" 
+              alt="LearnWise Logo" 
+              className="w-8 h-8" 
+              style={{minWidth: '60px', minHeight: '60px'}}
+            />
             <span className="font-bold text-xl gradient-text">LearnWise</span>
           </div>
 

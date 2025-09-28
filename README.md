@@ -2,7 +2,6 @@
 
 > **Hackathon-Ready MVP**: A full-stack adaptive learning platform that personalizes education through intelligent difficulty adjustment and comprehensive analytics.
 
-![AdaptiveAce](https://lovable.dev/projects/8315c02a-3b3c-4904-9be9-f2b57a425b58)
 
 ## 🚀 **30-Second Pitch**
 
@@ -312,5 +311,6 @@ MIT License - Build upon this foundation to transform education worldwide!
 
 **Ready to revolutionize learning? Let's make education adaptive, intelligent, and effective for every student!** 🚀
 
-*For questions, demo requests, or collaboration: [Your Contact Information]*#   l e a r n w i s e  
+*For questions, demo requests, or collaboration: [Your Contact Information]*#   l e a r n w i s e 
+ 
  

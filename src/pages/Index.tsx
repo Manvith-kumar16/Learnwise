@@ -21,10 +21,13 @@ const Index = () => {
       {/* Navigation */}
 <nav className="flex items-center justify-between px-6 py-4 border-b bg-background/80 backdrop-blur-sm">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-            <Brain className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <span className="font-bold text-xl gradient-text">LearnWise</span>
+          <img 
+            src="/logobg.png" 
+            alt="LearnWise Logo" 
+            className="w-15 h-8" 
+            style={{minWidth: '60px', minHeight: '60px'}}
+          />
+          <span className="font-bold text-3xl gradient-text">LearnWise</span>
         </div>
         <div className="flex items-center space-x-4">
           <Button variant="ghost" onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>Features</Button>
@@ -132,9 +135,9 @@ const Index = () => {
                   <h3 className="text-2xl font-bold mb-4">See Your Progress</h3>
                   <div className="space-y-4">
                     {[
-                      { subject: "Quantitative Aptitude", progress: 85, color: "bg-white" },
-                      { subject: "Logical Reasoning", progress: 72, color: "bg-white/80" },
-                      { subject: "Verbal Ability", progress: 91, color: "bg-white/60" }
+                      { subject: "Quantitative Aptitude", progress: 30, color: "bg-white" },
+                      { subject: "Logical Reasoning", progress: 52, color: "bg-white/80" },
+                      { subject: "Verbal Ability", progress: 76, color: "bg-white/60" }
                     ].map((item, index) => (
                       <div key={index}>
                         <div className="flex justify-between text-sm mb-1">
@@ -199,9 +202,14 @@ const Index = () => {
       <footer className="px-6 py-8 border-t bg-background">
         <div className="container mx-auto text-center text-muted-foreground">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-6 h-6 rounded bg-gradient-primary flex items-center justify-center">
-              <Brain className="w-4 h-4 text-primary-foreground" />
-            </div>
+          
+              <img 
+            src="/logobg.png" 
+            alt="LearnWise Logo" 
+            className="w-8 h-8" 
+            style={{minWidth: '60px', minHeight: '60px'}}
+          />
+          
             <span className="font-semibold gradient-text">LearnWise</span>
           </div>
           <p>© 2025 LearnWise. Empowering learners with AI-driven education.</p>
