@@ -48,6 +48,19 @@ export const QuestionCard = ({
     setTimeRemaining(timeLimit);
   }, [question.id, timeLimit]);
 
+  // Countdown timer effect
+  useEffect(() => {
+    if (showResult) return; // pause when showing result
+    if (timeRemaining <= 0) {
+      // Auto-submit as incorrect on timeout
+      setShowResult(true);
+      const t = setTimeout(() => onAnswer(-1, false), 500);
+      return () => clearTimeout(t);
+    }
+    const id = setInterval(() => setTimeRemaining((t) => t - 1), 1000);
+    return () => clearInterval(id);
+  }, [timeRemaining, showResult, onAnswer]);
+
   const difficultyColors = {
     very_easy: "bg-success text-success-foreground",
     easy: "bg-warning text-warning-foreground", 
@@ -90,7 +103,7 @@ export const QuestionCard = ({
           </Badge>
           <div className="flex items-center space-x-2 text-muted-foreground">
             <Clock className="w-4 h-4" />
-            <span className="text-sm font-medium">{timeRemaining}s</span>
+            <span className={cn("text-sm font-medium", timeRemaining <= 10 && "text-error font-semibold")}>{timeRemaining}s</span>
           </div>
         </div>
         
@@ -208,7 +221,7 @@ export const QuestionCard = ({
               
               <Button
                 onClick={handleSubmit}
-                disabled={selectedOption === null}
+                disabled={selectedOption === null || timeRemaining <= 0}
                 className="btn-gradient px-8"
               >
                 Submit Answer

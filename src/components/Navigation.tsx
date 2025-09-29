@@ -105,7 +105,7 @@ export const Navigation = ({ user: userProp }: NavigationProps) => {
                 </Button>
 
                 {/* Settings */}
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" aria-label="Settings" onClick={() => navigate('/settings')}>
                   <Settings className="w-4 h-4" />
                 </Button>
 

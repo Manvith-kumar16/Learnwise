@@ -11,10 +11,12 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  RotateCcw
+  RotateCcw,
+  Lock
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useProgress } from "@/context/ProgressContext";
+import { toast } from "@/components/ui/sonner";
 
 // Define the Subject types
 const SUBJECTS = {
@@ -2479,6 +2481,8 @@ const Practice = () => {
   const [currentSubject, setCurrentSubject] = useState<SubjectKey>("QA");
   const [currentPartIndex, setCurrentPartIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [mistakes, setMistakes] = useState<number[]>([]);
+  const [mistakeTags, setMistakeTags] = useState<string[]>([]);
 
   // Memoized creation of all parts for all subjects
   const allParts = useMemo(() => {
@@ -2493,7 +2497,34 @@ const Practice = () => {
   // Select the relevant parts array based on the current subject
   const parts = allParts[currentSubject] || [];
   const questions = parts[currentPartIndex] || [];
-  const currentQuestion = questions[currentQuestionIndex];
+  // Plan levels for this part (length is the number of correct answers required)
+  const planLevels: (keyof typeof difficultyRank)[] = useMemo(
+    () => (questions || []).map((q: any) => q.level as keyof typeof difficultyRank),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentSubject, currentPartIndex, questions.length]
+  );
+
+  // Dynamic, non-repeating question selection within a slot
+  const [presentedIds, setPresentedIds] = useState<string[]>([]);
+  const [currentQuestion, setCurrentQuestion] = useState<any | null>(null);
+
+  const fullPoolNormalized = useMemo(() => {
+    const src = allQuestions[currentSubject] as any[];
+    return src.map((q) => ({ ...q, level: normalizeDifficulty((q as any).difficulty) }));
+  }, [currentSubject]);
+
+  const pickQuestionForLevel = (level: keyof typeof difficultyRank) => {
+    // Try unseen first
+    const unseen = fullPoolNormalized.filter(
+      (q) => q.level === level && !presentedIds.includes(q.id)
+    );
+    if (unseen.length > 0) return unseen[Math.floor(Math.random() * unseen.length)];
+    // Fallback to any of the same level
+    const sameLevel = fullPoolNormalized.filter((q) => q.level === level);
+    if (sameLevel.length > 0) return sameLevel[Math.floor(Math.random() * sameLevel.length)];
+    // Last resort
+    return fullPoolNormalized[Math.floor(Math.random() * fullPoolNormalized.length)];
+  };
 
   const [sessionStats, setSessionStats] = useState({
     correct: 0,
@@ -2505,10 +2536,43 @@ const Practice = () => {
 
   // Persist per-part progress in localStorage
   const getProgressKey = (subject: SubjectKey, part: number) => `${subject}_part_${part}_progress`;
+  const getPartProgressNumber = (subject: SubjectKey, part: number) => {
+    try {
+      const raw = localStorage.getItem(getProgressKey(subject, part));
+      const n = raw ? parseInt(raw, 10) : 0;
+      return Number.isFinite(n) ? n : 0;
+    } catch { return 0; }
+  };
   
   const setPartProgress = (subject: SubjectKey, part: number, percent: number) => {
     try {
       localStorage.setItem(getProgressKey(subject, part), String(percent));
+    } catch {}
+  };
+
+  // Unlock gating helpers
+  const getUnlockedKey = (subject: SubjectKey) => `${subject}_unlocked_upto`;
+  const getUnlockedUpto = (subject: SubjectKey) => {
+    try {
+      const raw = localStorage.getItem(getUnlockedKey(subject));
+      const n = raw ? parseInt(raw, 10) : 0; // index of highest unlocked part (0-based)
+      return Number.isFinite(n) ? n : 0;
+    } catch {
+      return 0;
+    }
+  };
+  // Derive effective unlocked index from completion state to avoid stale/unexpected unlocks
+  const getEffectiveUnlockedUpto = (subject: SubjectKey) => {
+    let highestCompleted = -1;
+    for (let i = 0; i < parts.length; i++) {
+      const pct = getPartProgressNumber(subject, i + 1);
+      if (pct === 100) highestCompleted = i; else break; // require consecutive completion from start
+    }
+    return Math.min(parts.length - 1, highestCompleted + 1); // unlock next after last completed
+  };
+  const setUnlockedUpto = (subject: SubjectKey, upto: number) => {
+    try {
+      localStorage.setItem(getUnlockedKey(subject), String(upto));
     } catch {}
   };
 
@@ -2520,28 +2584,68 @@ const Practice = () => {
       streak: isCorrect ? prev.streak + 1 : 0
     }));
 
-    // Save progress percentage for this part
-    const pct = Math.round(((currentQuestionIndex + 1) / (questions.length || 1)) * 100);
+    if (!isCorrect) {
+      setMistakes(prev => (prev.includes(currentQuestionIndex + 1) ? prev : [...prev, currentQuestionIndex + 1]));
+      try {
+        const tags = (currentQuestion?.tags as string[]) || [];
+        if (tags.length) setMistakeTags(prev => [...prev, ...tags]);
+      } catch {}
+    }
+
+    // Save progress as target-correct progress
+    const pct = Math.round(((currentQuestionIndex + 1) / (planLevels.length || 1)) * 100);
     setPartProgress(currentSubject, currentPartIndex + 1, pct);
 
-    // Move to next question or complete session
     setTimeout(() => {
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex(prev => prev + 1);
+      if (isCorrect) {
+        // advance the slot
+        const nextIdx = currentQuestionIndex + 1;
+        if (nextIdx >= planLevels.length) {
+          setIsSessionComplete(true);
+          return;
+        }
+        setCurrentQuestionIndex(nextIdx);
+        const nextLevel = planLevels[nextIdx] || planLevels[planLevels.length - 1];
+        const nq = pickQuestionForLevel(nextLevel as keyof typeof difficultyRank);
+        setCurrentQuestion(nq);
+        if (nq && !presentedIds.includes(nq.id)) setPresentedIds((p) => [...p, nq.id]);
       } else {
-        setIsSessionComplete(true);
+        // retry same slot with a new question of the same level
+        const level = planLevels[currentQuestionIndex] || planLevels[0];
+        const nq = pickQuestionForLevel(level as keyof typeof difficultyRank);
+        setCurrentQuestion(nq);
+        if (nq && !presentedIds.includes(nq.id)) setPresentedIds((p) => [...p, nq.id]);
       }
-    }, 1500);
+    }, 800);
   };
 
   useEffect(() => {
     if (isSessionComplete) {
       const total = sessionStats.correct + sessionStats.incorrect;
       completeSession({ correct: sessionStats.correct, incorrect: sessionStats.incorrect, timeMinutes: total * 2 });
-      // Mark part as 100% complete
+      // Mark part as 100% complete (in terms of required correct answers)
       setPartProgress(currentSubject, currentPartIndex + 1, 100);
+      // Roll forward live timer baseline to avoid double-counting on dashboard
+      try { localStorage.setItem('active_practice_started_at', String(Date.now())); } catch {}
+
+      // Always unlock the next part once 10 correct answers are completed
+      const unlocked = getUnlockedUpto(currentSubject);
+      if (currentPartIndex >= unlocked) {
+        setUnlockedUpto(currentSubject, Math.min(parts.length - 1, currentPartIndex + 1));
+      }
+      if (currentPartIndex < parts.length - 1) {
+        toast.success(`Part ${currentPartIndex + 1} completed! Unlocking Part ${currentPartIndex + 2}`);
+        // Auto move to next part after a short pause
+        setTimeout(() => {
+          setIsSessionComplete(false);
+          setCurrentPartIndex((i) => Math.min(parts.length - 1, i + 1));
+          resetSession();
+        }, 1000);
+      } else {
+        toast.success("Great job! You've completed all parts in this subject.");
+      }
     }
-  }, [isSessionComplete, completeSession, currentSubject, currentPartIndex, sessionStats]);
+  }, [isSessionComplete, completeSession, currentSubject, currentPartIndex, sessionStats, parts.length]);
 
   // Effect to check URL params for initial subject/part load
   useEffect(() => {
@@ -2554,7 +2658,10 @@ const Practice = () => {
     }
 
     if (!Number.isNaN(partParam) && partParam >= 1 && partParam <= parts.length) {
-      setCurrentPartIndex(partParam - 1);
+      // Enforce gating on deep links using derived unlocks
+      const unlockedUpto = getEffectiveUnlockedUpto(subjectParam || currentSubject);
+      const desired = partParam - 1;
+      setCurrentPartIndex(Math.min(desired, unlockedUpto));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
@@ -2563,15 +2670,33 @@ const Practice = () => {
   const resetSession = () => {
     setCurrentQuestionIndex(0);
     setSessionStats({ correct: 0, incorrect: 0, totalTime: 0, streak: 0 });
+    setMistakes([]);
+    setMistakeTags([]);
+    setPresentedIds([]);
+    // seed first question for the planned difficulty sequence
+    const firstLevel = planLevels[0] || ("easy" as keyof typeof difficultyRank);
+    const nq = pickQuestionForLevel(firstLevel as keyof typeof difficultyRank);
+    setCurrentQuestion(nq);
+    if (nq && !presentedIds.includes(nq.id)) setPresentedIds((p) => [...p, nq.id]);
     setIsSessionComplete(false);
   };
 
   useEffect(() => {
     resetSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPartIndex, currentSubject]);
+  }, [currentPartIndex, currentSubject, questions.length]);
 
-  // Subject Switch Logic
+  // Mark practice as active for realtime dashboard tracking
+  useEffect(() => {
+    try {
+      localStorage.setItem('active_practice_started_at', String(Date.now()));
+    } catch {}
+    return () => {
+      try { localStorage.removeItem('active_practice_started_at'); } catch {}
+    };
+  }, []);
+
+  // Subject Switch Logic (kept for internal use if needed)
   const handleSubjectChange = (newSubject: SubjectKey) => {
     if (newSubject !== currentSubject) {
       setCurrentSubject(newSubject);
@@ -2581,6 +2706,7 @@ const Practice = () => {
   };
 
   if (isSessionComplete) {
+    const perfect = sessionStats.incorrect === 0;
     return (
       <div className="min-h-screen bg-gradient-subtle p-6">
         <div className="max-w-2xl mx-auto">
@@ -2588,8 +2714,8 @@ const Practice = () => {
             <CardContent className="p-8">
               <div className="mb-6">
                 <CheckCircle className="w-16 h-16 text-success mx-auto mb-4 animate-bounce-in" />
-                <h2 className="text-3xl font-bold mb-2">Session Complete! 🎉</h2>
-                <p className="text-muted-foreground">Great work on {SUBJECTS[currentSubject]} Part {currentPartIndex + 1}</p>
+                <h2 className="text-3xl font-bold mb-2">Session Complete</h2>
+                <p className="text-muted-foreground">{SUBJECTS[currentSubject]} • Part {currentPartIndex + 1}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
@@ -2623,23 +2749,109 @@ const Practice = () => {
                 </div>
               </div>
 
+              {mistakes.length > 0 && (
+                <div className="mb-6 text-left space-y-4">
+                  <Card className="card-elevated border-0">
+                    <CardHeader>
+                      <CardTitle className="text-left text-base">Review these incorrect questions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-2">Incorrect questions:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {mistakes.sort((a,b)=>a-b).map((q) => (
+                          <Badge key={q} variant="outline">Q{q}</Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="card-elevated border-0">
+                    <CardHeader>
+                      <CardTitle className="text-left text-base">Insights & Recommendations</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3 text-sm">
+                      {(() => {
+                        const diffs = ["very_easy","easy","moderate","hard"] as const;
+                        const totalBy = diffs.reduce<Record<string, number>>((acc, d) => {
+                          acc[d] = planLevels.filter((l) => l === d).length;
+                          return acc;
+                        }, {});
+                        const mistakeBy = diffs.reduce<Record<string, number>>((acc, d) => {
+                          acc[d] = mistakes.filter((idx) => planLevels[idx-1] === d).length;
+                          return acc;
+                        }, {});
+                        const accuracyBy = diffs.map(d => ({ d, total: totalBy[d], correct: Math.max(0, totalBy[d] - mistakeBy[d]) }));
+                        const weakest = accuracyBy.filter(x=>x.total>0).sort((a,b)=> (a.correct/a.total)-(b.correct/b.total))[0];
+                        const strongest = accuracyBy.filter(x=>x.total>0).sort((a,b)=> (b.correct/b.total)-(a.correct/a.total))[0];
+                        const tagCounts = mistakeTags.reduce<Record<string, number>>((m, t) => { m[t] = (m[t]||0)+1; return m; }, {});
+                        const topTags = Object.entries(tagCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+                        return (
+                          <div className="space-y-2">
+                            <div>
+                              <p className="font-medium">Difficulty accuracy</p>
+                              <div className="grid grid-cols-2 gap-2 mt-1">
+                                {accuracyBy.map(({d,total,correct}) => (
+                                  <div key={d} className="flex items-center justify-between rounded-md bg-accent/30 px-2 py-1">
+                                    <span className="capitalize">{d.replace("_"," ")}</span>
+                                    <span className="font-semibold">{total ? Math.round((correct/total)*100) : 100}%</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            {weakest && (
+                              <div>
+                                <p className="font-medium">Focus next</p>
+                                <p className="text-muted-foreground">You struggled most with <span className="capitalize font-semibold">{weakest.d.replace("_"," ")}</span> questions.</p>
+                              </div>
+                            )}
+                            {strongest && (
+                              <div>
+                                <p className="font-medium">Strength</p>
+                                <p className="text-muted-foreground">You performed best on <span className="capitalize font-semibold">{strongest.d.replace("_"," ")}</span> questions.</p>
+                              </div>
+                            )}
+                            {topTags.length > 0 && (
+                              <div>
+                                <p className="font-medium">Weak topics</p>
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                  {topTags.map(([tag,count]) => (
+                                    <Badge key={tag} variant="outline">{tag} × {count}</Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            <div className="text-muted-foreground">
+                              <ul className="list-disc ml-5 space-y-1">
+                                <li>Revisit explanations for the incorrect questions above.</li>
+                                <li>Practice 5 more questions in your weakest difficulty to reinforce learning.</li>
+                                <li>Use hints sparingly and focus on setting up equations carefully.</li>
+                              </ul>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
               <div className="space-y-3">
                 <Button onClick={resetSession} className="w-full btn-gradient">
                   <RotateCcw className="w-4 h-4 mr-2" />
                   Practice Again
                 </Button>
                 <div className="grid grid-cols-2 gap-3">
-                  <Button onClick={() => navigate('/practice/parts')} variant="outline" className="w-full">
-                    All Parts
-                  </Button>
                   {currentPartIndex < parts.length - 1 && (
                     <Button 
+                      variant="outline"
+                      className="w-full"
                       onClick={() => {
+                        const ok = window.confirm(`Move to Part ${currentPartIndex + 2}?`);
+                        if (!ok) return;
+                        setIsSessionComplete(false);
                         setCurrentPartIndex(currentPartIndex + 1);
                         resetSession();
-                      }} 
-                      variant="outline" 
-                      className="w-full"
+                      }}
                     >
                       Next Part
                     </Button>
@@ -2654,6 +2866,17 @@ const Practice = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
+    );
+  }
+
+  // If question is not yet prepared (initial render), show a minimal placeholder
+  if (!currentQuestion) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-6">
+        <Card className="card-elevated border-0 w-full max-w-md text-center">
+          <CardContent className="p-8">Loading questions…</CardContent>
+        </Card>
       </div>
     );
   }
@@ -2674,56 +2897,59 @@ const Practice = () => {
             </Button>
             <div>
               <h1 className="font-bold whitespace-nowrap">
-                {SUBJECTS[currentSubject]} • Question {currentQuestionIndex + 1} of {questions.length}
+                {SUBJECTS[currentSubject]} • Part {currentPartIndex + 1} of {parts.length} • Question {currentQuestionIndex + 1} of {planLevels.length}
               </h1>
             </div>
           </div>
           
           <div className="flex items-center space-x-4">
-            {/* Subject Switcher */}
-            <select
-              className="border rounded px-3 py-2 bg-background font-medium"
-              value={currentSubject}
-              onChange={(e) => handleSubjectChange(e.target.value as SubjectKey)}
-            >
-              <option value="QA">Quantitative Aptitude</option>
-              <option value="LRDI">Logical Reasoning & DI</option>
-              <option value="VARC">Verbal Ability & RC</option>
-            </select>
-
-            <div className="flex items-center space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                disabled={currentPartIndex === 0}
-                onClick={() => setCurrentPartIndex((i) => Math.max(0, i - 1))}
-              >
-                Prev Part
-              </Button>
-              <Badge variant="outline" className="rounded-md px-3 py-1 whitespace-nowrap">
-                Part {currentPartIndex + 1} / {parts.length}
-              </Badge>
-              <Button 
-                variant="outline" 
-                size="sm"
-                disabled={currentPartIndex === parts.length - 1}
-                onClick={() => setCurrentPartIndex((i) => Math.min(parts.length - 1, i + 1))}
-              >
-                Next Part
-              </Button>
-            </div>
-            
-            <Button variant="outline" size="sm" onClick={() => navigate('/practice/parts')}>
-              All Parts
-            </Button>
             <Badge className="bg-gradient-primary text-primary-foreground">
               <Target className="w-4 h-4 mr-1" />
               Adaptive Mode
             </Badge>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" aria-label="Settings">
               <Settings className="w-4 h-4" />
             </Button>
           </div>
+        </div>
+      </div>
+
+      {/* Part Selector */}
+      <div className="bg-background/60 border-b px-4 py-2">
+        <div className="max-w-4xl mx-auto flex items-center gap-2 overflow-x-auto">
+          {Array.from({ length: parts.length }).map((_, i) => {
+            const isCurrent = i === currentPartIndex;
+            const isUnlocked = i <= getEffectiveUnlockedUpto(currentSubject);
+            const progress = getPartProgressNumber(currentSubject, i + 1);
+            return (
+              <Button
+                key={i}
+                size="sm"
+                variant={isCurrent ? "default" : "outline"}
+                disabled={!isUnlocked}
+                className="whitespace-nowrap"
+                onClick={() => {
+                  if (i === currentPartIndex) return;
+                  const ok = window.confirm(`Switch to Part ${i + 1}? Your current progress in this session will reset.`);
+                  if (!ok) return;
+                  setCurrentPartIndex(i);
+                  resetSession();
+                }}
+                title={isUnlocked ? (progress === 100 ? "Completed" : `Progress ${progress}%`) : "Locked"}
+              >
+                {isUnlocked ? (
+                  <>
+                    Part {i + 1}
+                    {progress === 100 && <CheckCircle className="w-3 h-3 ml-2 text-success" />}
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-3 h-3 mr-1" /> Part {i + 1}
+                  </>
+                )}
+              </Button>
+            );
+          })}
         </div>
       </div>
 
@@ -2732,12 +2958,12 @@ const Practice = () => {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
             <span>Progress</span>
-            <span>{Math.round(((currentQuestionIndex + 1) / (questions.length || 1)) * 100)}%</span>
+            <span>{Math.round(((currentQuestionIndex + 1) / (planLevels.length || 1)) * 100)}%</span>
           </div>
           <div className="w-full bg-muted rounded-full h-2">
             <div 
               className="bg-gradient-primary h-2 rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${((currentQuestionIndex + 1) / (questions.length || 1)) * 100}%` }}
+              style={{ width: `${((currentQuestionIndex + 1) / (planLevels.length || 1)) * 100}%` }}
             />
           </div>
         </div>
@@ -2779,6 +3005,7 @@ const Practice = () => {
         <QuestionCard 
           question={currentQuestion}
           onAnswer={handleAnswer}
+          timeLimit={30}
           showHints={true}
         />
       </div>

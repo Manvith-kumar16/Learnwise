@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { completePracticeSession, ensureStudentRecord, getAuthUser, getStudent, StudentRecord, TopicProgress } from "@/lib/store";
+import { completePracticeSession, ensureStudentRecord, getAuthUser, getStudent, StudentRecord, TopicProgress, saveStudent } from "@/lib/store";
 import { useAuth } from "@/context/AuthContext";
 
 type ProgressContextType = {
@@ -23,7 +23,15 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return;
     }
     ensureStudentRecord(user.email, user.name);
-    const s = getStudent(user.email);
+    let s = getStudent(user.email);
+    // Reset today's study time if we crossed a day boundary
+    if (s) {
+      const today = new Date().toISOString().slice(0, 10);
+      const last = s.lastSessionDate || today;
+      if (last !== today && (s.studyTimeTodayMinutes || 0) > 0) {
+        s = saveStudent({ ...s, studyTimeTodayMinutes: 0 });
+      }
+    }
     setStudent(s);
   };
 
