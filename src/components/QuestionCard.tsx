@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { 
-  Timer, 
   HelpCircle, 
   CheckCircle, 
   XCircle, 
@@ -56,6 +55,13 @@ export const QuestionCard = ({
     difficult: "bg-error text-error-foreground"
   };
 
+  const difficultySections: Record<Question["difficulty"], string> = {
+    very_easy: "Section-1",
+    easy: "Section-2",
+    moderate: "Section-3",
+    difficult: "Section-4",
+  };
+
   const handleOptionSelect = (optionIndex: number) => {
     if (showResult) return;
     setSelectedOption(optionIndex);
@@ -80,7 +86,7 @@ export const QuestionCard = ({
       <CardHeader className="bg-gradient-subtle border-b">
         <div className="flex items-center justify-between mb-4">
           <Badge className={cn("text-xs font-medium", difficultyColors[question.difficulty])}>
-            {question.difficulty.replace('_', ' ').toUpperCase()}
+            {difficultySections[question.difficulty]}
           </Badge>
           <div className="flex items-center space-x-2 text-muted-foreground">
             <Clock className="w-4 h-4" />
@@ -242,3 +248,4 @@ export const QuestionCard = ({
     </Card>
   );
 };
+
