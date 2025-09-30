@@ -13,9 +13,41 @@ import {
   Sparkles
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { 
+  FadeIn, 
+  ScrollReveal, 
+  Typewriter, 
+  AnimatedCard,
+  StaggerContainer,
+  StaggerItem,
+  AnimatedButton
+} from "@/components/ui/animated";
+import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  const handleSignIn = () => {
+    if (user) {
+      // User is already logged in, go directly to dashboard
+      navigate(user.role === 'teacher' ? '/class-dashboard' : '/dashboard');
+    } else {
+      // User is not logged in, go to login page
+      navigate('/login');
+    }
+  };
+  
+  const handleGetStarted = () => {
+    if (user) {
+      // User is already logged in, go directly to dashboard
+      navigate(user.role === 'teacher' ? '/class-dashboard' : '/dashboard');
+    } else {
+      // User is not logged in, go to signup
+      navigate('/signup');
+    }
+  };
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Navigation */}
@@ -32,8 +64,12 @@ const Index = () => {
         <div className="flex items-center space-x-4">
           <Button variant="ghost" onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>Features</Button>
           <Button variant="ghost" onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}>About</Button>
-          <Button variant="outline" onClick={() => navigate('/dashboard')}>Sign In</Button>
-          <Button className="btn-gradient" onClick={() => navigate('/dashboard')}>Get Started</Button>
+          <Button variant="outline" onClick={handleSignIn}>
+            {user ? 'Go to Dashboard' : 'Sign In'}
+          </Button>
+          <Button className="btn-gradient" onClick={handleGetStarted}>
+            {user ? 'Continue Learning' : 'Get Started'}
+          </Button>
         </div>
       </nav>
 
@@ -41,57 +77,81 @@ const Index = () => {
       <section className="px-6 py-20 text-center relative overflow-hidden">
         <div className="absolute inset-0 hero-gradient opacity-10"></div>
         <div className="container mx-auto relative z-10">
-          <Badge className="mb-6 bg-accent text-accent-foreground animate-bounce-in">
-            <Sparkles className="w-4 h-4 mr-2" />
-            AI-Powered Adaptive Learning
-          </Badge>
+          <FadeIn delay={0.2}>
+            <Badge className="mb-6 bg-accent text-accent-foreground">
+              <Sparkles className="w-4 h-4 mr-2" />
+              AI-Powered Adaptive Learning
+            </Badge>
+          </FadeIn>
           
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-            Learn Smarter with
-            <span className="gradient-text block mt-2">LearnWise</span>
-          </h1>
+          <FadeIn delay={0.3}>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6">
+              Learn Smarter with
+              <span className="gradient-text block mt-2 animate-gradient">
+                <Typewriter text="LearnWise" delay={0.5} />
+              </span>
+            </h1>
+          </FadeIn>
           
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in [animation-delay:200ms]">
-            Our AI adapts to your learning pace, identifies weak areas, and creates personalized practice sessions for maximum learning efficiency.
-          </p>
+          <FadeIn delay={0.4} direction="up">
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Our AI adapts to your learning pace, identifies weak areas, and creates personalized practice sessions for maximum learning efficiency.
+            </p>
+          </FadeIn>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in [animation-delay:400ms]">
-            <Button size="lg" className="btn-gradient text-lg px-8 py-4" onClick={() => navigate('/dashboard')}>
-              Start Learning Free
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-4" onClick={() => navigate('/practice')}>
-              Watch Demo
-            </Button>
-          </div>
+          <FadeIn delay={0.5}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <AnimatedButton 
+                variant="glow"
+                className="btn-gradient text-lg px-8 py-4" 
+                onClick={handleGetStarted}
+              >
+                {user ? 'Continue Learning' : 'Start Learning Free'}
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </AnimatedButton>
+              <AnimatedButton 
+                variant="scale"
+                className="border border-border text-lg px-8 py-4 bg-background" 
+                onClick={() => user ? navigate('/practice') : document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                {user ? 'Practice Now' : 'Learn More'}
+              </AnimatedButton>
+            </div>
+          </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto animate-fade-in [animation-delay:600ms]">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
               { icon: Target, title: "Adaptive Difficulty", desc: "Questions adjust to your skill level in real-time" },
               { icon: Brain, title: "AI-Powered Analytics", desc: "Deep insights into your learning patterns" },
               { icon: TrendingUp, title: "Proven Results", desc: "Students improve 3x faster with our system" }
             ].map((feature, index) => (
-              <Card key={index} className="card-elevated border-0 animate-float" style={{animationDelay: `${index * 0.5}s`}}>
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-primary mx-auto mb-4 flex items-center justify-center">
-                    <feature.icon className="w-6 h-6 text-primary-foreground" />
-                  </div>
-                  <h3 className="font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground">{feature.desc}</p>
-                </CardContent>
-              </Card>
+              <StaggerItem key={index}>
+                <AnimatedCard className="card-glass h-full">
+                  <CardContent className="p-6 text-center">
+                    <motion.div 
+                      className="w-12 h-12 rounded-lg bg-gradient-primary mx-auto mb-4 flex items-center justify-center"
+                      whileHover={{ rotate: 360, scale: 1.1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <feature.icon className="w-6 h-6 text-primary-foreground" />
+                    </motion.div>
+                    <h3 className="font-semibold mb-2">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground">{feature.desc}</p>
+                  </CardContent>
+                </AnimatedCard>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
       {/* Features Section */}
       <section id="features" className="px-6 py-20 bg-background">
         <div className="container mx-auto">
-          <div className="text-center mb-16">
+          <ScrollReveal className="text-center mb-16" animation="fade">
             <h2 className="text-4xl font-bold mb-4">Everything You Need to Excel</h2>
             <p className="text-xl text-muted-foreground">Comprehensive tools for students, teachers, and parents</p>
-          </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -117,20 +177,25 @@ const Index = () => {
                   desc: "Real-time insights and intervention suggestions for educators and families"
                 }
               ].map((feature, index) => (
-                <div key={index} className="flex items-start space-x-4 animate-fade-in" style={{animationDelay: `${index * 200}ms`}}>
-                  <div className="w-12 h-12 rounded-lg bg-gradient-primary flex items-center justify-center shrink-0">
+                <ScrollReveal key={index} animation="slide" className="flex items-start space-x-4">
+                  <motion.div 
+                    className="w-12 h-12 rounded-lg bg-gradient-primary flex items-center justify-center shrink-0"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
                     <feature.icon className="w-6 h-6 text-primary-foreground" />
-                  </div>
+                  </motion.div>
                   <div>
                     <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
                     <p className="text-muted-foreground">{feature.desc}</p>
                   </div>
-                </div>
+                </ScrollReveal>
               ))}
             </div>
 
-            <Card className="card-elevated border-0 overflow-hidden">
-              <CardContent className="p-0">
+            <ScrollReveal animation="scale">
+              <AnimatedCard className="topic-card overflow-hidden" hoverable={true}>
+                <CardContent className="p-0">
                 <div className="bg-gradient-hero p-8 text-primary-foreground">
                   <h3 className="text-2xl font-bold mb-4">See Your Progress</h3>
                   <div className="space-y-4">
@@ -167,8 +232,9 @@ const Index = () => {
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </AnimatedCard>
+            </ScrollReveal>
           </div>
         </div>
       </section>

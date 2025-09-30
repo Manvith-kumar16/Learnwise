@@ -219,7 +219,10 @@ export const getClassOverview = (classId = "placement-prep") => {
   return { totalStudents, avgProgress, activeStudents, needAttention };
 };
 
-export const completePracticeSession = (email: string, params: { correct: number; incorrect: number; timeMinutes?: number }) => {
+export const completePracticeSession = (
+  email: string,
+  params: { correct: number; incorrect: number; timeMinutes?: number; subject?: 'QA' | 'LRDI' | 'VARC' }
+) => {
   const student = getStudent(email);
   if (!student) return null;
   const totalAttempted = (params.correct ?? 0) + (params.incorrect ?? 0);
@@ -234,16 +237,24 @@ export const completePracticeSession = (email: string, params: { correct: number
     else newStreak = 1; // reset
   }
 
-  // simple progress update heuristic
+  // simple progress update heuristic (subject-specific)
   const accuracy = totalAttempted ? params.correct / totalAttempted : 0;
   const progressBump = Math.round(accuracy * 5); // small incremental bump per session
   const recentScore = Math.round(accuracy * 100);
 
-  const updatedTopics = student.topics.map((t, idx) => {
-    const questionsInc = Math.ceil(totalAttempted / student.topics.length);
+  const subjectNameMap: Record<string, string> = {
+    QA: 'Quantitative Aptitude',
+    LRDI: 'Logical Reasoning & DI',
+    VARC: 'Verbal Ability & RC',
+  };
+  const targetName = params.subject ? subjectNameMap[params.subject] : student.topics[0]?.name;
+
+  const updatedTopics = student.topics.map((t) => {
+    if (t.name !== targetName) return { ...t };
+    const questionsInc = totalAttempted; // all attempted counted towards selected subject
     const newQ = (t.questionsCompleted || 0) + questionsInc;
     const newProg = Math.min(100, (t.progress || 0) + progressBump);
-    const newRecent = idx === 0 ? recentScore : Math.max(0, Math.min(100, t.recentScore));
+    const newRecent = Math.max(0, Math.min(100, recentScore));
     return { ...t, questionsCompleted: newQ, progress: newProg, recentScore: newRecent };
   });
 

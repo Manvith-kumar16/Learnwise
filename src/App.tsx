@@ -11,9 +11,15 @@ import PracticeParts from "./pages/PracticeParts";
 import Goals from "./pages/Goals";
 import Teacher from "./pages/Teacher";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
+import WorkingLogin from '@/pages/WorkingLogin';
+import Login from '@/pages/Login';
+import LoginTest from '@/pages/LoginTest';
+import SimpleTest from '@/pages/SimpleTest';
+import InputDiagnostics from '@/pages/InputDiagnostics';
 import Signup from "./pages/Signup";
 import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
+import ClassDashboard from "./pages/ClassDashboard";
 import { AuthProvider } from "@/context/AuthContext";
 import { ProgressProvider } from "@/context/ProgressContext";
 
@@ -35,9 +41,15 @@ const App = () => (
                 <Route path="/practice/parts" element={<PracticeParts />} />
                 <Route path="/goals" element={<Goals />} />
                 <Route path="/teacher" element={<Teacher />} />
-                <Route path="/login" element={<Login />} />
+                <Route path="/login" element={<WorkingLogin />} />
+                <Route path="/login-old" element={<Login />} />
+                <Route path="/login-test" element={<LoginTest />} />
+                <Route path="/simple-test" element={<SimpleTest />} />
+                <Route path="/diagnostics" element={<InputDiagnostics />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/class-dashboard" element={<ClassDashboard />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

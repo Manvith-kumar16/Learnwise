@@ -10,6 +10,14 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 
 interface NavigationProps {
   user?: {
@@ -29,7 +37,7 @@ export const Navigation = ({ user: userProp }: NavigationProps) => {
     { 
       path: "/dashboard", 
       label: "Dashboard", 
-      roles: ["student", "teacher", "parent", "admin"] 
+      roles: ["student", "teacher"] 
     },
     { 
       path: "/practice", 
@@ -37,24 +45,29 @@ export const Navigation = ({ user: userProp }: NavigationProps) => {
       roles: ["student"] 
     },
     { 
+      path: "/class-dashboard", 
+      label: "Class Dashboard", 
+      roles: ["teacher"] 
+    },
+    { 
       path: "/teacher", 
-      label: "My Classes", 
+      label: "Assignments", 
       roles: ["teacher"] 
     },
     { 
       path: "/analytics", 
       label: "Analytics", 
-      roles: ["teacher", "admin"] 
+      roles: ["teacher"] 
     },
     { 
       path: "/reports", 
       label: "Reports", 
-      roles: ["teacher", "parent", "admin"] 
+      roles: ["teacher"] 
     }
   ].filter(item => item.roles.includes(user.role)) : [];
 
   return (
-    <nav className="bg-background/95 backdrop-blur-sm border-b sticky top-0 z-50">
+    <nav className="bg-background/80 backdrop-blur-md border-b border-white-soft sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -111,13 +124,25 @@ export const Navigation = ({ user: userProp }: NavigationProps) => {
 
                 {/* User Profile */}
                 <div className="flex items-center space-x-3 pl-3 border-l">
-                  <div className="text-right">
+                  <div className="text-right cursor-pointer" onClick={() => navigate('/profile')} title="Profile">
                     <p className="text-sm font-medium">{user.name}</p>
                     <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
                   </div>
-                  <Button variant="ghost" size="sm" className="rounded-full w-8 h-8 p-0">
-                    <User className="w-4 h-4" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="rounded-full w-8 h-8 p-0" aria-label="User menu">
+                        <User className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onSelect={() => navigate('/profile')}>Profile</DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => navigate('/settings')}>Settings</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onSelect={() => { signOut(); navigate('/login'); }}>Logout</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
 
                 {/* Logout */}

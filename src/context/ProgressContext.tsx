@@ -8,7 +8,7 @@ type ProgressContextType = {
   diagnostics: StudentRecord["diagnostics"] | null;
   todaysPlan: { topic: string; questions: number; difficulty: string; estimated: string }[];
   refresh: () => void;
-  completeSession: (params: { correct: number; incorrect: number; timeMinutes?: number }) => void;
+  completeSession: (params: { correct: number; incorrect: number; timeMinutes?: number; subject?: 'QA' | 'LRDI' | 'VARC' }) => void;
 };
 
 const ProgressContext = createContext<ProgressContextType | undefined>(undefined);
@@ -40,9 +40,9 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.email]);
 
-  const completeSession: ProgressContextType["completeSession"] = ({ correct, incorrect, timeMinutes }) => {
+  const completeSession: ProgressContextType["completeSession"] = ({ correct, incorrect, timeMinutes, subject }) => {
     if (!user) return;
-    const updated = completePracticeSession(user.email, { correct, incorrect, timeMinutes });
+    const updated = completePracticeSession(user.email, { correct, incorrect, timeMinutes, subject });
     setStudent(updated);
   };
 

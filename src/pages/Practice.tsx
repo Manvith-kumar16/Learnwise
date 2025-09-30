@@ -12,11 +12,23 @@ import {
   CheckCircle,
   XCircle,
   RotateCcw,
-  Lock
+  Lock,
+  ArrowRight,
+  Home
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useProgress } from "@/context/ProgressContext";
 import { toast } from "@/components/ui/sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // Define the Subject types
 const SUBJECTS = {
@@ -2483,6 +2495,7 @@ const Practice = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [mistakes, setMistakes] = useState<number[]>([]);
   const [mistakeTags, setMistakeTags] = useState<string[]>([]);
+  const [showContinueDialog, setShowContinueDialog] = useState(false);
 
   // Memoized creation of all parts for all subjects
   const allParts = useMemo(() => {
@@ -2622,7 +2635,12 @@ const Practice = () => {
   useEffect(() => {
     if (isSessionComplete) {
       const total = sessionStats.correct + sessionStats.incorrect;
-      completeSession({ correct: sessionStats.correct, incorrect: sessionStats.incorrect, timeMinutes: total * 2 });
+      completeSession({ 
+        correct: sessionStats.correct, 
+        incorrect: sessionStats.incorrect, 
+        timeMinutes: total * 2,
+        subject: currentSubject 
+      });
       // Mark part as 100% complete (in terms of required correct answers)
       setPartProgress(currentSubject, currentPartIndex + 1, 100);
       // Roll forward live timer baseline to avoid double-counting on dashboard
@@ -2635,12 +2653,10 @@ const Practice = () => {
       }
       if (currentPartIndex < parts.length - 1) {
         toast.success(`Part ${currentPartIndex + 1} completed! Unlocking Part ${currentPartIndex + 2}`);
-        // Auto move to next part after a short pause
+        // Show continue dialog instead of auto-advancing
         setTimeout(() => {
-          setIsSessionComplete(false);
-          setCurrentPartIndex((i) => Math.min(parts.length - 1, i + 1));
-          resetSession();
-        }, 1000);
+          setShowContinueDialog(true);
+        }, 1500);
       } else {
         toast.success("Great job! You've completed all parts in this subject.");
       }
@@ -2710,7 +2726,7 @@ const Practice = () => {
     return (
       <div className="min-h-screen bg-gradient-subtle p-6">
         <div className="max-w-2xl mx-auto">
-          <Card className="card-elevated border-0 text-center">
+          <Card className="topic-card text-center">
             <CardContent className="p-8">
               <div className="mb-6">
                 <CheckCircle className="w-16 h-16 text-success mx-auto mb-4 animate-bounce-in" />
@@ -2751,7 +2767,7 @@ const Practice = () => {
 
               {mistakes.length > 0 && (
                 <div className="mb-6 text-left space-y-4">
-                  <Card className="card-elevated border-0">
+                  <Card className="card-glass">
                     <CardHeader>
                       <CardTitle className="text-left text-base">Review these incorrect questions</CardTitle>
                     </CardHeader>
@@ -2765,7 +2781,7 @@ const Practice = () => {
                     </CardContent>
                   </Card>
 
-                  <Card className="card-elevated border-0">
+                  <Card className="card-glass">
                     <CardHeader>
                       <CardTitle className="text-left text-base">Insights & Recommendations</CardTitle>
                     </CardHeader>
@@ -2836,30 +2852,36 @@ const Practice = () => {
               )}
 
               <div className="space-y-3">
-                <Button onClick={resetSession} className="w-full btn-gradient">
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Practice Again
-                </Button>
                 <div className="grid grid-cols-2 gap-3">
+                  <Button onClick={resetSession} className="btn-gradient">
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Practice Again
+                  </Button>
+                  <Button onClick={() => navigate('/dashboard')} variant="outline">
+                    <Home className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Button>
+                </div>
+                <div className="w-full">
                   {currentPartIndex < parts.length - 1 && (
                     <Button 
-                      variant="outline"
-                      className="w-full"
+                      variant="default"
+                      className="w-full btn-gradient"
                       onClick={() => {
-                        const ok = window.confirm(`Move to Part ${currentPartIndex + 2}?`);
-                        if (!ok) return;
-                        setIsSessionComplete(false);
-                        setCurrentPartIndex(currentPartIndex + 1);
-                        resetSession();
+                        setShowContinueDialog(true);
                       }}
                     >
-                      Next Part
+                      <ArrowRight className="w-4 h-4 mr-2" />
+                      Continue to Next Part
                     </Button>
                   )}
                   {currentPartIndex === parts.length - 1 && (
-                    <Button onClick={() => navigate('/dashboard')} variant="outline" className="w-full">
-                      Dashboard
-                    </Button>
+                    <div className="text-center">
+                      <Badge className="bg-success/20 text-success border-success/50">
+                        🎆 All Parts Completed!
+                      </Badge>
+                      <p className="text-sm text-muted-foreground mt-2">You've mastered all parts in this subject!</p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -2883,6 +2905,74 @@ const Practice = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      {/* Continue Dialog */}
+      <AlertDialog open={showContinueDialog} onOpenChange={setShowContinueDialog}>
+        <AlertDialogContent className="dialog-content border-white-strong">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl flex items-center gap-2">
+              <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-white" />
+              </div>
+              Part {currentPartIndex + 1} Complete!
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base mt-4">
+              <div className="space-y-4">
+                <p className="font-medium text-foreground">
+                  Excellent work! You've successfully completed Part {currentPartIndex + 1} of {SUBJECTS[currentSubject]}.
+                </p>
+                
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="text-center p-3 rounded-lg bg-gradient-subtle border border-white-soft">
+                    <p className="text-2xl font-bold text-success">{sessionStats.correct}</p>
+                    <p className="text-xs text-muted-foreground">Correct</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-gradient-subtle border border-white-soft">
+                    <p className="text-2xl font-bold text-error">{sessionStats.incorrect}</p>
+                    <p className="text-xs text-muted-foreground">Incorrect</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-gradient-subtle border border-white-soft">
+                    <p className="text-2xl font-bold text-primary">{Math.round((sessionStats.correct / (sessionStats.correct + sessionStats.incorrect)) * 100)}%</p>
+                    <p className="text-xs text-muted-foreground">Accuracy</p>
+                  </div>
+                </div>
+                
+                <div className="p-3 rounded-lg bg-gradient-primary/10 border border-primary/20">
+                  <p className="text-sm font-medium text-foreground">
+                    🎆 Part {currentPartIndex + 2} is now unlocked!
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Ready to continue your learning journey?
+                  </p>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={() => {
+                setShowContinueDialog(false);
+                navigate('/dashboard');
+              }}
+            >
+              <Home className="w-4 h-4 mr-2" />
+              Go to Dashboard
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="btn-gradient"
+              onClick={() => {
+                setShowContinueDialog(false);
+                setIsSessionComplete(false);
+                setCurrentPartIndex((i) => Math.min(parts.length - 1, i + 1));
+                resetSession();
+              }}
+            >
+              <ArrowRight className="w-4 h-4 mr-2" />
+              Continue to Part {currentPartIndex + 2}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Header */}
       <div className="bg-background/80 backdrop-blur-sm border-b p-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -2973,7 +3063,7 @@ const Practice = () => {
       <div className="p-4">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <Card className="card-elevated border-0">
+            <Card className="card-glass">
               <CardContent className="p-3 text-center">
                 <CheckCircle className="w-6 h-6 text-success mx-auto mb-1" />
                 <p className="font-bold text-lg">{sessionStats.correct}</p>
@@ -2981,7 +3071,7 @@ const Practice = () => {
               </CardContent>
             </Card>
             
-            <Card className="card-elevated border-0">
+            <Card className="card-glass">
               <CardContent className="p-3 text-center">
                 <XCircle className="w-6 h-6 text-error mx-auto mb-1" />
                 <p className="font-bold text-lg">{sessionStats.incorrect}</p>
@@ -2989,7 +3079,7 @@ const Practice = () => {
               </CardContent>
             </Card>
             
-            <Card className="card-elevated border-0">
+            <Card className="card-glass">
               <CardContent className="p-3 text-center">
                 <Target className="w-6 h-6 text-primary mx-auto mb-1" />
                 <p className="font-bold text-lg">{sessionStats.streak}</p>

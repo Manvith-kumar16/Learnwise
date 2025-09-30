@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Test</title>
+</head>
+<body style="padding: 50px; font-family: Arial, sans-serif;">
+    <h1>Basic Input Test</h1>
+    
+    <div style="margin-bottom: 20px;">
+        <label for="test1">Test Input 1 (No React):</label><br>
+        <input type="text" id="test1" placeholder="Type here..." style="padding: 8px; width: 300px;">
+        <div id="output1" style="margin-top: 10px;">Value: <span id="value1"></span></div>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <label for="test2">Test Input 2 (With Event Listener):</label><br>
+        <input type="text" id="test2" placeholder="Type here..." style="padding: 8px; width: 300px;">
+        <div id="output2" style="margin-top: 10px;">Value: <span id="value2"></span></div>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <label for="test3">Test Textarea:</label><br>
+        <textarea id="test3" placeholder="Type here..." style="padding: 8px; width: 300px; height: 100px;"></textarea>
+        <div id="output3" style="margin-top: 10px;">Value: <span id="value3"></span></div>
+    </div>
+
+    <script>
+        // Add event listeners to show input values
+        document.getElementById('test1').addEventListener('input', function(e) {
+            document.getElementById('value1').textContent = e.target.value;
+            console.log('Input 1:', e.target.value);
+        });
+        
+        document.getElementById('test2').addEventListener('input', function(e) {
+            document.getElementById('value2').textContent = e.target.value;
+            console.log('Input 2:', e.target.value);
+        });
+        
+        document.getElementById('test3').addEventListener('input', function(e) {
+            document.getElementById('value3').textContent = e.target.value;
+            console.log('Textarea:', e.target.value);
+        });
+        
+        // Log any key events
+        document.addEventListener('keydown', function(e) {
+            console.log('Keydown event:', e.key, 'Target:', e.target.tagName);
+        });
+    </script>
+</body>
+</html>

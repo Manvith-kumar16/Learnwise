@@ -17,6 +17,17 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useProgress } from "@/context/ProgressContext";
 import { useEffect, useMemo, useState } from "react";
+import { 
+  FadeIn, 
+  ScrollReveal, 
+  AnimatedCard,
+  StaggerContainer,
+  StaggerItem,
+  AnimatedButton,
+  LoadingSpinner
+} from "@/components/ui/animated";
+import { DashboardSkeleton } from "@/components/ui/skeleton-loader";
+import { motion, AnimatePresence } from "framer-motion";
 
 const iconForTopic = (topicName: string) => {
   if (topicName.startsWith("Quantitative")) return Brain;
@@ -36,6 +47,13 @@ export const StudentDashboard = () => {
   const navigate = useNavigate();
   const { student, topics, todaysPlan, refresh } = useProgress();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate loading state
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const baseStudyTime = student?.studyTimeTodayMinutes ?? 0;
   const overall = Math.max(0, Math.min(100, (student?.overallProgress ?? 0) || (topics.length ? Math.round(topics.reduce((a, t) => a + (t.progress || 0), 0) / topics.length) : 0)));
@@ -81,75 +99,110 @@ export const StudentDashboard = () => {
     return `${days} d${remHours ? ` ${remHours} h` : ''}`;
   };
 
+  // Show loading skeleton
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle">
+        <DashboardSkeleton />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-subtle p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <FadeIn className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Welcome back, {student?.name || 'Student'}! 👋</h1>
             <p className="text-muted-foreground mt-1">Ready to continue your learning journey?</p>
           </div>
-          <div className="flex items-center space-x-4">
+          <motion.div 
+            className="flex items-center space-x-4"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
             <Badge variant="outline" className="flex items-center space-x-1">
               <Award className="w-4 h-4" />
               <span>{student?.level || 'Beginner'}</span>
             </Badge>
-            <Badge className="bg-gradient-primary text-primary-foreground">
+            <Badge className="bg-gradient-primary text-primary-foreground animate-float">
               🔥 {student?.streak ?? 0} day streak
             </Badge>
-          </div>
-        </div>
+          </motion.div>
+        </FadeIn>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
             { label: "Questions Completed", value: fmtNumber(questionsCompleted), icon: CheckCircle, color: "text-success" },
             { label: "Current Streak", value: fmtStreak(student?.streak ?? 0), icon: Calendar, color: "text-primary" },
             { label: "Study Time Today", value: fmtDuration(studyTime), icon: Clock, color: "text-warning" },
             { label: "Overall Progress", value: `${overall}%`, icon: TrendingUp, color: "text-success" }
           ].map((stat, index) => (
-            <Card key={index} className="card-elevated border-0">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                    <p className="text-2xl font-bold">{stat.value}</p>
+            <StaggerItem key={index}>
+              <AnimatedCard className="card-elevated h-full" hoverable={true}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">{stat.label}</p>
+                      <motion.p 
+                        className="text-2xl font-bold"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.5 + index * 0.1, type: "spring" }}
+                      >
+                        {stat.value}
+                      </motion.p>
+                    </div>
+                    <motion.div
+                      initial={{ rotate: -180, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
+                    >
+                      <stat.icon className={`w-8 h-8 ${stat.color}`} />
+                    </motion.div>
                   </div>
-                  <stat.icon className={`w-8 h-8 ${stat.color}`} />
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </AnimatedCard>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Topics grid */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="card-elevated border-0">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <BarChart3 className="w-5 h-5" />
-                  <span>Topics</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <ScrollReveal animation="fade">
+              <Card className="card-elevated border-0">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <BarChart3 className="w-5 h-5" />
+                    <span>Topics</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {topics.map((topic, index) => {
                     const Icon = iconForTopic(topic.name);
                     const active = selectedIndex === index;
                     return (
-                      <Card
-                        key={index}
-                        className={`cursor-pointer transition-transform hover:scale-[1.01] ${active ? 'ring-2 ring-primary' : ''}`}
-                        onClick={() => setSelectedIndex(active ? null : index)}
-                      >
-                        <CardContent className="p-4">
+                      <StaggerItem key={index}>
+                        <AnimatedCard
+                          className={`topic-card cursor-pointer ${active ? 'ring-2 ring-primary' : ''}`}
+                          onClick={() => setSelectedIndex(active ? null : index)}
+                          hoverable={true}
+                        >
+                          <CardContent className="p-4">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
-                              <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center">
+                              <motion.div 
+                                className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center"
+                                whileHover={{ rotate: 360 }}
+                                transition={{ duration: 0.5 }}
+                              >
                                 <Icon className="w-5 h-5 text-primary-foreground" />
-                              </div>
+                              </motion.div>
                               <div>
                                 <p className="font-semibold leading-tight">{topic.name}</p>
                                 <p className="text-xs text-muted-foreground">Recent {topic.recentScore}%</p>
@@ -157,19 +210,35 @@ export const StudentDashboard = () => {
                             </div>
                             <Badge variant="outline" className="text-xs">{topic.progress}%</Badge>
                           </div>
-                          <Progress value={topic.progress} className="h-2" />
+                          <motion.div
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
+                            style={{ transformOrigin: "left" }}
+                          >
+                            <Progress value={topic.progress} className="h-2" />
+                          </motion.div>
                         </CardContent>
-                      </Card>
+                      </AnimatedCard>
+                    </StaggerItem>
                     );
                   })}
-                </div>
-              </CardContent>
-            </Card>
+                  </StaggerContainer>
+                </CardContent>
+              </Card>
+            </ScrollReveal>
 
             {/* Selected topic details */}
-            {selectedIndex !== null && topics[selectedIndex] && (
-              <Card className="card-elevated border-0">
-                <CardHeader>
+            <AnimatePresence>
+              {selectedIndex !== null && topics[selectedIndex] && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Card className="card-elevated border-0">
+                    <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     {(() => { const I = iconForTopic(topics[selectedIndex].name); return <I className="w-5 h-5" />; })()}
                     <span>Topic Progress • {topics[selectedIndex].name}</span>
@@ -190,13 +259,19 @@ export const StudentDashboard = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">{topics[selectedIndex].questionsCompleted} questions completed • Recent {topics[selectedIndex].recentScore}%</p>
-                    <Button className="btn-gradient" onClick={() => navigate(`/practice?subject=${subjectKeyForTopic(topics[selectedIndex].name)}`)}>
+                    <AnimatedButton 
+                      variant="glow" 
+                      className="btn-gradient" 
+                      onClick={() => navigate(`/practice?subject=${subjectKeyForTopic(topics[selectedIndex].name)}`)}
+                    >
                       <Play className="w-4 h-4 mr-2" /> Practice Topic
-                    </Button>
+                    </AnimatedButton>
                   </div>
                 </CardContent>
               </Card>
-            )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
             {/* Today's Practice Plan */}
             <Card className="card-elevated border-0">
