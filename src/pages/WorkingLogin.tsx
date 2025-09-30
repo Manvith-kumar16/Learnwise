@@ -7,7 +7,7 @@ const WorkingLogin = () => {
   const { signIn } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("student");
+  const [role, setRole] = useState<"student" | "teacher">("student");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,7 +15,7 @@ const WorkingLogin = () => {
       alert("Please enter name and email");
       return;
     }
-    signIn({ name, email, role: role as "student" | "teacher" });
+    signIn({ name, email, role });
     navigate(role === "teacher" ? "/class-dashboard" : "/dashboard");
   };
 
@@ -26,19 +26,20 @@ const WorkingLogin = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#f6f8fa",
+        background: "linear-gradient(135deg, #0a0f1c, #0f172a)", // dark bg
       }}
     >
       <form
         onSubmit={handleSubmit}
         style={{
-          background: "white",
+          background: "#1e293b", // card darker slate
           padding: 32,
           borderRadius: 16,
-          boxShadow: "0 4px 24px #0002",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
           minWidth: 340,
           width: "100%",
           maxWidth: 380,
+          color: "#f3f4f6", // light text
         }}
       >
         <h2
@@ -47,11 +48,14 @@ const WorkingLogin = () => {
             marginBottom: 32,
             fontWeight: 700,
             fontSize: 28,
-            color: "#2563eb",
+            color: "#3b82f6", // blue accent
+            textShadow: "0 1px 2px rgba(0,0,0,0.5)",
           }}
         >
           Sign In
         </h2>
+
+        {/* Name Input */}
         <div style={{ marginBottom: 20 }}>
           <label
             htmlFor="name"
@@ -59,7 +63,7 @@ const WorkingLogin = () => {
               display: "block",
               marginBottom: 8,
               fontWeight: 500,
-              color: "#222",
+              color: "#e5e7eb", // light label
             }}
           >
             Name
@@ -73,7 +77,9 @@ const WorkingLogin = () => {
               width: "100%",
               padding: 12,
               borderRadius: 8,
-              border: "1px solid #e5e7eb",
+              border: "1px solid #334155",
+              background: "#0f172a",
+              color: "#f9fafb",
               fontSize: 16,
               outline: "none",
               boxSizing: "border-box",
@@ -81,6 +87,8 @@ const WorkingLogin = () => {
             placeholder="Enter your name"
           />
         </div>
+
+        {/* Email Input */}
         <div style={{ marginBottom: 20 }}>
           <label
             htmlFor="email"
@@ -88,7 +96,7 @@ const WorkingLogin = () => {
               display: "block",
               marginBottom: 8,
               fontWeight: 500,
-              color: "#222",
+              color: "#e5e7eb",
             }}
           >
             Email
@@ -102,7 +110,9 @@ const WorkingLogin = () => {
               width: "100%",
               padding: 12,
               borderRadius: 8,
-              border: "1px solid #e5e7eb",
+              border: "1px solid #334155",
+              background: "#0f172a",
+              color: "#f9fafb",
               fontSize: 16,
               outline: "none",
               boxSizing: "border-box",
@@ -110,13 +120,15 @@ const WorkingLogin = () => {
             placeholder="Enter your email"
           />
         </div>
+
+        {/* Role Selection */}
         <div style={{ marginBottom: 28 }}>
           <label
             style={{
               display: "block",
               marginBottom: 8,
               fontWeight: 500,
-              color: "#222",
+              color: "#e5e7eb",
             }}
           >
             Role
@@ -128,7 +140,7 @@ const WorkingLogin = () => {
                 alignItems: "center",
                 gap: 8,
                 fontWeight: 400,
-                color: "#222",
+                color: "#f3f4f6",
               }}
             >
               <input
@@ -137,7 +149,7 @@ const WorkingLogin = () => {
                 value="student"
                 checked={role === "student"}
                 onChange={() => setRole("student")}
-                style={{ accentColor: "#2563eb" }}
+                style={{ accentColor: "#3b82f6" }}
               />{" "}
               Student
             </label>
@@ -147,7 +159,7 @@ const WorkingLogin = () => {
                 alignItems: "center",
                 gap: 8,
                 fontWeight: 400,
-                color: "#222",
+                color: "#f3f4f6",
               }}
             >
               <input
@@ -156,26 +168,36 @@ const WorkingLogin = () => {
                 value="teacher"
                 checked={role === "teacher"}
                 onChange={() => setRole("teacher")}
-                style={{ accentColor: "#2563eb" }}
+                style={{ accentColor: "#3b82f6" }}
               />{" "}
               Teacher
             </label>
           </div>
         </div>
+
+        {/* Submit Button */}
         <button
           type="submit"
           style={{
             width: "100%",
             padding: 14,
-            background: "#2563eb",
+            background: "#3b82f6",
             color: "white",
             border: "none",
             borderRadius: 8,
             fontWeight: 600,
             fontSize: 18,
-            boxShadow: "0 2px 8px #2563eb22",
+            boxShadow: "0 4px 12px rgba(59,130,246,0.3)",
             cursor: "pointer",
-            transition: "background 0.2s",
+            transition: "background 0.2s, transform 0.1s",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.background = "#2563eb";
+            e.currentTarget.style.transform = "scale(1.02)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = "#3b82f6";
+            e.currentTarget.style.transform = "scale(1)";
           }}
         >
           Sign In

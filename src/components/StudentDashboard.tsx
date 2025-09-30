@@ -56,8 +56,33 @@ export const StudentDashboard = () => {
   }, []);
 
   const baseStudyTime = student?.studyTimeTodayMinutes ?? 0;
-  const overall = Math.max(0, Math.min(100, (student?.overallProgress ?? 0) || (topics.length ? Math.round(topics.reduce((a, t) => a + (t.progress || 0), 0) / topics.length) : 0)));
+  const overall = Math.max(
+    0, 
+    Math.min(
+      100, 
+      (student?.overallProgress ?? 0) || 
+      (topics.length ? Math.round(topics.reduce((a, t) => a + (t.progress || 0), 0) / topics.length) : 0)
+    )
+  );
   const questionsCompleted = (student?.totalQuestions ?? 0) || (topics.length ? topics.reduce((a, t) => a + (t.questionsCompleted || 0), 0) : 0);
+
+  // Animate number for "Questions Completed"
+  const [animatedQuestions, setAnimatedQuestions] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const end = 45; // Target value for animation
+    const duration = 1000; // in ms
+    const increment = end / (duration / 16); // approx 60fps
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        start = end;
+        clearInterval(timer);
+      }
+      setAnimatedQuestions(Math.floor(start));
+    }, 16);
+    return () => clearInterval(timer);
+  }, []);
 
   // Realtime ticker and storage sync
   const [now, setNow] = useState(Date.now());
@@ -136,7 +161,7 @@ export const StudentDashboard = () => {
         {/* Quick Stats */}
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
-            { label: "Questions Completed", value: fmtNumber(questionsCompleted), icon: CheckCircle, color: "text-success" },
+            { label: "Questions Completed", value: animatedQuestions, icon: CheckCircle, color: "text-success" },
             { label: "Current Streak", value: fmtStreak(student?.streak ?? 0), icon: Calendar, color: "text-primary" },
             { label: "Study Time Today", value: fmtDuration(studyTime), icon: Clock, color: "text-warning" },
             { label: "Overall Progress", value: `${overall}%`, icon: TrendingUp, color: "text-success" }
@@ -153,7 +178,7 @@ export const StudentDashboard = () => {
                         animate={{ scale: 1 }}
                         transition={{ delay: 0.5 + index * 0.1, type: "spring" }}
                       >
-                        {stat.value}
+                        {typeof stat.value === 'number' ? fmtNumber(stat.value) : stat.value}
                       </motion.p>
                     </div>
                     <motion.div
@@ -334,16 +359,25 @@ export const StudentDashboard = () => {
 
             {/* Achievement Badge */}
             <Card className="card-elevated border-0 bg-gradient-hero text-primary-foreground overflow-hidden">
-              <CardContent className="p-6 text-center relative">
-                <Award className="w-12 h-12 mx-auto mb-3 animate-float" />
-                <h3 className="font-bold mb-2">Great Progress!</h3>
-                <p className="text-sm text-primary-foreground/90 mb-4">
-                  You've improved your accuracy by 15% this week
-                </p>
-                <Badge className="bg-primary-foreground text-primary">
-                  Keep it up! 🚀
-                </Badge>
-              </CardContent>
+             <CardContent 
+  className="p-6 text-center relative" 
+  style={{ color: "white" }}
+>
+  <Award 
+    className="w-12 h-12 mx-auto mb-3 animate-float" 
+    style={{ color: "white" }} 
+  />
+  <h3 className="font-bold mb-2" style={{ color: "white" }}>
+    Great Progress!
+  </h3>
+  <p className="text-sm mb-4" style={{ color: "white" }}>
+    You've improved your accuracy by 15% this week
+  </p>
+  <Badge style={{ backgroundColor: "white", color: "black" }}>
+    Keep it up! 🚀
+  </Badge>
+</CardContent>
+
             </Card>
           </div>
         </div>
