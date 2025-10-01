@@ -99,7 +99,7 @@ Learnwise/
 
 ![screenshot1](src/assets/screenshot1.png)
 
-![screenshot2](./assets/screenshot2.png)
+![screenshot2](src/assets/screenshot2.png)
 
 
 ---
