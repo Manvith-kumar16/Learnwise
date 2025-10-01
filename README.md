@@ -96,10 +96,11 @@ Learnwise/
 
 > *Add your app screenshots or demo GIFs here later*
 
-```
-![screenshot1](./assets/screenshot1.png)
+
+![screenshot1](src/assets/screenshot1.png)
+
 ![screenshot2](./assets/screenshot2.png)
-```
+
 
 ---
 
