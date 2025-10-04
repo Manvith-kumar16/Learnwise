@@ -7,9 +7,7 @@ interface ProgressRingProps {
   className?: string;
   children?: React.ReactNode;
   showPercentage?: boolean;
-  color?: "primary" | "success" | "warning" | "error";
 }
-
 
 export const ProgressRing = ({
   progress,
@@ -18,21 +16,22 @@ export const ProgressRing = ({
   className,
   children,
   showPercentage = true,
-  color = "primary"
 }: ProgressRingProps) => {
   const sizes = {
     sm: 60,
     md: 80,
     lg: 120,
-    xl: 160
+    xl: 160,
   };
-  
-  const colors = {
-    primary: "stroke-primary",
-    success: "stroke-success",
-    warning: "stroke-warning", 
-    error: "stroke-error"
+
+  // Dynamic color bands
+  const getColor = (p: number) => {
+    if (p >= 70) return "stroke-green-500 text-green-600";
+    if (p >= 40) return "stroke-yellow-500 text-yellow-600";
+    return "stroke-red-500 text-red-600";
   };
+
+  const colorClass = getColor(progress);
 
   const radius = (sizes[size] - thickness) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -45,17 +44,16 @@ export const ProgressRing = ({
         width={sizes[size]}
         height={sizes[size]}
       >
-        {/* Background circle */}
+        {/* Background circle (track with visible border) */}
         <circle
           cx={sizes[size] / 2}
           cy={sizes[size] / 2}
           r={radius}
           fill="transparent"
-          stroke="currentColor"
           strokeWidth={thickness}
-          className="text-muted/20"
+          className="stroke-gray-200 dark:stroke-[hsl(222,49%,35%)]"
         />
-        
+
         {/* Progress circle */}
         <circle
           cx={sizes[size] / 2}
@@ -66,41 +64,26 @@ export const ProgressRing = ({
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
-          className={cn("transition-all duration-1000 ease-out", colors[color])}
+          className={cn("transition-all duration-1000 ease-out", colorClass)}
         />
-        
-        {/* Glow effect for primary color */}
-        {color === "primary" && progress > 0 && (
-          <circle
-            cx={sizes[size] / 2}
-            cy={sizes[size] / 2}
-            r={radius}
-            fill="transparent"
-            strokeWidth={thickness + 2}
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            className="stroke-primary/30 transition-all duration-1000 ease-out"
-            style={{ filter: 'blur(3px)' }}
-          />
-        )}
       </svg>
-      
+
       {/* Center content */}
       <div className="absolute inset-0 flex items-center justify-center">
         {children || (showPercentage && (
           <div className="text-center">
             <div className={cn(
-              "font-bold",
+              // removed bold
               size === "sm" && "text-sm",
               size === "md" && "text-lg",
               size === "lg" && "text-2xl",
-              size === "xl" && "text-3xl"
+              size === "xl" && "text-3xl",
+              colorClass.replace("stroke-", "") // match text color with progress color
             )}>
               {Math.round(progress)}%
             </div>
             {size !== "sm" && (
-              <div className="text-xs text-muted-foreground">Complete</div>
+              <div className="text-xs text-gray-500">Complete</div>
             )}
           </div>
         ))}

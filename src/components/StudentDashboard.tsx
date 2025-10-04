@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -219,30 +219,33 @@ export const StudentDashboard = () => {
                           hoverable={true}
                         >
                           <CardContent className="p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-2">
-                              <motion.div 
-                                className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center"
-                                whileHover={{ rotate: 360 }}
-                                transition={{ duration: 0.5 }}
-                              >
-                                <Icon className="w-5 h-5 text-primary-foreground" />
-                              </motion.div>
-                              <div>
-                                <p className="font-semibold leading-tight">{topic.name}</p>
-                                <p className="text-xs text-muted-foreground">Recent {topic.recentScore}%</p>
-                              </div>
-                            </div>
-                            <Badge variant="outline" className="text-xs">{topic.progress}%</Badge>
-                          </div>
+                         <div className="flex items-center justify-between mb-2">
+  <div className="flex items-center space-x-2">
+    <motion.div 
+      className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center"
+      whileHover={{ rotate: 360 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Icon className="w-5 h-5 text-primary-foreground" />
+    </motion.div>
+    <div>
+      <p className="font-semibold leading-tight">{topic.name}</p>
+      <p className="text-xs text-muted-foreground">Recent {topic.recentScore}%</p>
+    </div>
+  </div>
+  {/* 🔄 Now showing recentScore instead of progress */}
+  <Badge variant="outline" className="text-xs">{topic.recentScore}%</Badge>
+</div>
+
                           <motion.div
-                            initial={{ scaleX: 0 }}
-                            animate={{ scaleX: 1 }}
-                            transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
-                            style={{ transformOrigin: "left" }}
-                          >
-                            <Progress value={topic.progress} className="h-2" />
-                          </motion.div>
+  initial={{ scaleX: 0 }}
+  animate={{ scaleX: 1 }}
+  transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
+  style={{ transformOrigin: "left" }}
+>
+  <Progress value={topic.recentScore} className="h-2" />
+</motion.div>
+
                         </CardContent>
                       </AnimatedCard>
                     </StaggerItem>
@@ -264,39 +267,58 @@ export const StudentDashboard = () => {
                 >
                   <Card className="card-elevated border-0">
                     <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    {(() => { const I = iconForTopic(topics[selectedIndex].name); return <I className="w-5 h-5" />; })()}
-                    <span>Topic Progress • {topics[selectedIndex].name}</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-muted-foreground">Progress</span>
-                      <span className="text-sm font-semibold">{topics[selectedIndex].progress}%</span>
-                    </div>
-                    <Progress value={topics[selectedIndex].progress} className="h-2" />
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {topics[selectedIndex].subTopics.map((st, i) => (
-                      <Badge key={i} variant="outline" className="text-xs">{st}</Badge>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">{topics[selectedIndex].questionsCompleted} questions completed • Recent {topics[selectedIndex].recentScore}%</p>
-                    <AnimatedButton 
-                      variant="glow" 
-                      className="btn-gradient" 
-                      onClick={() => navigate(`/practice?subject=${subjectKeyForTopic(topics[selectedIndex].name)}`)}
-                    >
-                      <Play className="w-4 h-4 mr-2" /> Practice Topic
-                    </AnimatedButton>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                      <CardTitle className="flex items-center space-x-2">
+                        {(() => { 
+                          const I = iconForTopic(topics[selectedIndex].name); 
+                          return <I className="w-5 h-5" />; 
+                        })()}
+                        <span>Topic Progress • {topics[selectedIndex].name}</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {/* Progress bar (Recent Performance) */}
+<div>
+  <div className="flex items-center justify-between mb-2">
+    <span className="text-sm text-muted-foreground">Recent Performance</span>
+    <span className="text-sm font-semibold">
+      {topics[selectedIndex].recentScore}%
+    </span>
+  </div>
+  <Progress 
+    value={topics[selectedIndex].recentScore} 
+    className="h-2" 
+    colorMode="recent"   // ✅ tells Progress.tsx to apply red/yellow/green
+  />
+</div>
+
+
+                      {/* Subtopics */}
+                      <div className="flex flex-wrap gap-2">
+                        {topics[selectedIndex].subTopics.map((st, i) => (
+                          <Badge key={i} variant="outline" className="text-xs">{st}</Badge>
+                        ))}
+                      </div>
+
+                      {/* Questions Completed + Practice button */}
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-muted-foreground">
+                          {topics[selectedIndex].questionsCompleted} questions completed • Recent {topics[selectedIndex].recentScore}%
+                        </p>
+
+                        <AnimatedButton 
+                          variant="glow" 
+                          className="btn-gradient flex items-center whitespace-nowrap" 
+                          onClick={() => navigate(`/practice?subject=${subjectKeyForTopic(topics[selectedIndex].name)}`)}
+                        >
+                          <Play className="w-4 h-4 mr-2" /> 
+                          Practice Topic
+                        </AnimatedButton>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Today's Practice Plan */}
             <Card className="card-elevated border-0">
@@ -359,25 +381,24 @@ export const StudentDashboard = () => {
 
             {/* Achievement Badge */}
             <Card className="card-elevated border-0 bg-gradient-hero text-primary-foreground overflow-hidden">
-             <CardContent 
-  className="p-6 text-center relative" 
-  style={{ color: "white" }}
->
-  <Award 
-    className="w-12 h-12 mx-auto mb-3 animate-float" 
-    style={{ color: "white" }} 
-  />
-  <h3 className="font-bold mb-2" style={{ color: "white" }}>
-    Great Progress!
-  </h3>
-  <p className="text-sm mb-4" style={{ color: "white" }}>
-    You've improved your accuracy by 15% this week
-  </p>
-  <Badge style={{ backgroundColor: "white", color: "black" }}>
-    Keep it up! 🚀
-  </Badge>
-</CardContent>
-
+              <CardContent 
+                className="p-6 text-center relative" 
+                style={{ color: "white" }}
+              >
+                <Award 
+                  className="w-12 h-12 mx-auto mb-3 animate-float" 
+                  style={{ color: "white" }} 
+                />
+                <h3 className="font-bold mb-2" style={{ color: "white" }}>
+                  Great Progress!
+                </h3>
+                <p className="text-sm mb-4" style={{ color: "white" }}>
+                  You've improved your accuracy by 15% this week
+                </p>
+                <Badge style={{ backgroundColor: "white", color: "black" }}>
+                  Keep it up! 🚀
+                </Badge>
+              </CardContent>
             </Card>
           </div>
         </div>

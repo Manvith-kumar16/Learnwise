@@ -31,27 +31,24 @@ const Index = () => {
   
   const handleSignIn = () => {
     if (user) {
-      // User is already logged in, go directly to dashboard
       navigate(user.role === 'teacher' ? '/class-dashboard' : '/dashboard');
     } else {
-      // User is not logged in, go to login page
       navigate('/login');
     }
   };
   
   const handleGetStarted = () => {
     if (user) {
-      // User is already logged in, go directly to dashboard
       navigate(user.role === 'teacher' ? '/class-dashboard' : '/dashboard');
     } else {
-      // User is not logged in, go to signup
       navigate('/signup');
     }
   };
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Navigation */}
-<nav className="flex items-center justify-between px-6 py-4 border-b bg-background/80 backdrop-blur-sm">
+      <nav className="flex items-center justify-between px-6 py-4 border-b bg-background/80 backdrop-blur-sm">
         <div className="flex items-center space-x-2">
           <img 
             src="/logobg.png" 
@@ -67,8 +64,9 @@ const Index = () => {
           <Button variant="outline" onClick={handleSignIn}>
             {user ? 'Go to Dashboard' : 'Sign In'}
           </Button>
-          <Button className="btn-gradient" onClick={handleGetStarted}>
+          <Button className="btn-gradient flex items-center justify-center gap-2" onClick={handleGetStarted}>
             {user ? 'Continue Learning' : 'Get Started'}
+            <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
       </nav>
@@ -103,11 +101,11 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <AnimatedButton 
                 variant="glow"
-                className="btn-gradient text-lg px-8 py-4" 
+                className="btn-gradient text-lg px-8 py-4 flex items-center justify-center gap-2" 
                 onClick={handleGetStarted}
               >
                 {user ? 'Continue Learning' : 'Start Learning Free'}
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-5 h-5" />
               </AnimatedButton>
               <AnimatedButton 
                 variant="scale"
@@ -196,42 +194,42 @@ const Index = () => {
             <ScrollReveal animation="scale">
               <AnimatedCard className="topic-card overflow-hidden" hoverable={true}>
                 <CardContent className="p-0">
-                <div className="bg-gradient-hero p-8 text-primary-foreground">
-                  <h3 className="text-2xl font-bold mb-4">See Your Progress</h3>
-                  <div className="space-y-4">
+                  <div className="bg-gradient-hero p-8 text-primary-foreground">
+                    <h3 className="text-2xl font-bold mb-4">See Your Progress</h3>
+                    <div className="space-y-4">
+                      {[
+                        { subject: "Quantitative Aptitude", progress: 30, color: "bg-white" },
+                        { subject: "Logical Reasoning", progress: 52, color: "bg-white/80" },
+                        { subject: "Verbal Ability", progress: 76, color: "bg-white/60" }
+                      ].map((item, index) => (
+                        <div key={index}>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>{item.subject}</span>
+                            <span>{item.progress}%</span>
+                          </div>
+                          <div className="w-full bg-white/20 rounded-full h-2">
+                            <div 
+                              className={`${item.color} h-2 rounded-full transition-all duration-1000 ease-out`}
+                              style={{ width: `${item.progress}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="p-6 space-y-3">
                     {[
-                      { subject: "Quantitative Aptitude", progress: 30, color: "bg-white" },
-                      { subject: "Logical Reasoning", progress: 52, color: "bg-white/80" },
-                      { subject: "Verbal Ability", progress: 76, color: "bg-white/60" }
-                    ].map((item, index) => (
-                      <div key={index}>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>{item.subject}</span>
-                          <span>{item.progress}%</span>
-                        </div>
-                        <div className="w-full bg-white/20 rounded-full h-2">
-                          <div 
-                            className={`${item.color} h-2 rounded-full transition-all duration-1000 ease-out`}
-                            style={{ width: `${item.progress}%` }}
-                          />
-                        </div>
+                      "✓ Personalized difficulty adjustment",
+                      "✓ Weak area identification", 
+                      "✓ Targeted practice recommendations",
+                      "✓ Real-time performance analytics"
+                    ].map((benefit, index) => (
+                      <div key={index} className="flex items-center space-x-2 text-sm">
+                        <CheckCircle className="w-4 h-4 text-success" />
+                        <span>{benefit}</span>
                       </div>
                     ))}
                   </div>
-                </div>
-                <div className="p-6 space-y-3">
-                  {[
-                    "✓ Personalized difficulty adjustment",
-                    "✓ Weak area identification", 
-                    "✓ Targeted practice recommendations",
-                    "✓ Real-time performance analytics"
-                  ].map((benefit, index) => (
-                    <div key={index} className="flex items-center space-x-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-success" />
-                      <span>{benefit}</span>
-                    </div>
-                  ))}
-                </div>
                 </CardContent>
               </AnimatedCard>
             </ScrollReveal>
@@ -250,32 +248,38 @@ const Index = () => {
           </div>
         </div>
       </section>
+{/* CTA Section */}
+<section className="px-6 py-20 bg-gradient-hero text-primary-foreground">
+  <div className="container mx-auto text-center">
+    <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Learning?</h2>
+    <p className="text-xl mb-8 text-primary-foreground/90">
+      Join thousands of students who've accelerated their academic success with AdaptiveAce
+    </p>
+    <div className="flex justify-center">
+      <Button 
+        size="lg" 
+        variant="outline" 
+        className="text-lg px-8 py-4 bg-primary-foreground text-primary hover:bg-primary-foreground/90 flex items-center justify-center gap-2" 
+        onClick={() => navigate('/dashboard')}
+      >
+        Start Your Free Trial
+        <ArrowRight className="w-5 h-5" />
+      </Button>
+    </div>
+  </div>
+</section>
 
-      {/* CTA Section */}
-      <section className="px-6 py-20 bg-gradient-hero text-primary-foreground">
-        <div className="container mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Learning?</h2>
-          <p className="text-xl mb-8 text-primary-foreground/90">
-            Join thousands of students who've accelerated their academic success with AdaptiveAce
-          </p>
-          <Button size="lg" variant="outline" className="text-lg px-8 py-4 bg-primary-foreground text-primary hover:bg-primary-foreground/90" onClick={() => navigate('/dashboard')}>
-            Start Your Free Trial
-          </Button>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t bg-background">
         <div className="container mx-auto text-center text-muted-foreground">
           <div className="flex items-center justify-center space-x-2 mb-4">
-          
-              <img 
-            src="/logobg.png" 
-            alt="LearnWise Logo" 
-            className="w-8 h-8" 
-            style={{minWidth: '60px', minHeight: '60px'}}
-          />
-          
+            <img 
+              src="/logobg.png" 
+              alt="LearnWise Logo" 
+              className="w-8 h-8" 
+              style={{minWidth: '60px', minHeight: '60px'}}
+            />
             <span className="font-semibold gradient-text">LearnWise</span>
           </div>
           <p>© 2025 LearnWise. Empowering learners with AI-driven education.</p>
