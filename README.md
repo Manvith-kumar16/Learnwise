@@ -94,7 +94,7 @@ Learnwise/
 
 ## 📸 Screenshots / Demo
 
-> *Add your app screenshots or demo GIFs here later*
+
 
 
 ![screenshot1](src/assets/screenshot1.png)
