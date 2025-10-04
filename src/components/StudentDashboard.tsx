@@ -12,6 +12,7 @@ import {
   Award,
   Clock,
   BarChart3,
+  Flame,
   CheckCircle
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -161,38 +162,39 @@ export const StudentDashboard = () => {
         {/* Quick Stats */}
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
-            { label: "Questions Completed", value: animatedQuestions, icon: CheckCircle, color: "text-success" },
-            { label: "Current Streak", value: fmtStreak(student?.streak ?? 0), icon: Calendar, color: "text-primary" },
-            { label: "Study Time Today", value: fmtDuration(studyTime), icon: Clock, color: "text-warning" },
-            { label: "Overall Progress", value: `${overall}%`, icon: TrendingUp, color: "text-success" }
-          ].map((stat, index) => (
-            <StaggerItem key={index}>
-              <AnimatedCard className="card-elevated h-full" hoverable={true}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">{stat.label}</p>
-                      <motion.p 
-                        className="text-2xl font-bold"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.5 + index * 0.1, type: "spring" }}
-                      >
-                        {typeof stat.value === 'number' ? fmtNumber(stat.value) : stat.value}
-                      </motion.p>
-                    </div>
-                    <motion.div
-                      initial={{ rotate: -180, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
-                    >
-                      <stat.icon className={`w-8 h-8 ${stat.color}`} />
-                    </motion.div>
-                  </div>
-                </CardContent>
-              </AnimatedCard>
-            </StaggerItem>
-          ))}
+  { label: "Questions Completed", value: animatedQuestions, icon: CheckCircle, color: "text-success" },
+  { label: "Current Streak", value: fmtStreak(student?.streak ?? 0), icon: Flame, color: "text-orange-500" }, // ✅ fire icon
+  { label: "Study Time Today", value: fmtDuration(studyTime), icon: Clock, color: "text-warning" },
+  { label: "Overall Progress", value: `${overall}%`, icon: TrendingUp, color: "text-success" }
+].map((stat, index) => (
+  <StaggerItem key={index}>
+    <AnimatedCard className="card-elevated h-full" hoverable={true}>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground">{stat.label}</p>
+            <motion.p 
+              className="text-2xl font-bold"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.5 + index * 0.1, type: "spring" }}
+            >
+              {typeof stat.value === 'number' ? fmtNumber(stat.value) : stat.value}
+            </motion.p>
+          </div>
+          <motion.div
+            initial={{ rotate: -180, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
+          >
+            <stat.icon className={`w-8 h-8 ${stat.color}`} />
+          </motion.div>
+        </div>
+      </CardContent>
+    </AnimatedCard>
+  </StaggerItem>
+))}
+
         </StaggerContainer>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

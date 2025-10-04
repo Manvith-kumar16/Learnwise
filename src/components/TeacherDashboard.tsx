@@ -14,7 +14,6 @@ import {
   FileText,
   Download,
   Eye,
-  BarChart3,
   Clock,
 } from "lucide-react";
 import { getClassStudents } from "@/lib/store";
@@ -30,6 +29,77 @@ interface TeacherDashboardProps {
 
 export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
   const students = getClassStudents();
+
+  // 🔹 Export all students report as CSV
+  const exportReport = () => {
+    const csvContent = [
+      ["Name", "Email", "Progress", "Study Time"],
+      ...students.map((s) => [
+        s.name,
+        s.email,
+        s.overallProgress + "%",
+        (s.studyTimeTodayMinutes || 0) + " min",
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "class_report.csv";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  // 🔹 Export a class summary report (txt)
+  const generateClassReport = () => {
+    const report = `
+Class Report - ${classData.name}
+--------------------------------
+Total Students: ${classData.totalStudents}
+Active Students: ${classData.activeStudents}
+Average Progress: ${classData.avgProgress}%
+
+Students:
+${students.map((s) => `- ${s.name} (${s.email}) : ${s.overallProgress}% progress, ${s.studyTimeTodayMinutes || 0} min`).join("\n")}
+`;
+    const blob = new Blob([report], { type: "text/plain" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "class_summary.csv";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  // 🔹 View student details (can replace with modal later)
+  const viewStudent = (student: any) => {
+    alert(
+      `Viewing details for ${student.name}\nEmail: ${student.email}\nProgress: ${student.overallProgress}%`
+    );
+  };
+
+  // 🔹 Generate student report (txt)
+  const generateStudentReport = (student: any) => {
+    const report = `
+Student Report
+---------------
+Name: ${student.name}
+Email: ${student.email}
+Progress: ${student.overallProgress}%
+Study Time: ${student.studyTimeTodayMinutes || 0} min
+Diagnostics: ${JSON.stringify(student.diagnostics, null, 2)}
+`;
+    const blob = new Blob([report], { type: "text/plain" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${student.name}_report.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
   const classInsights = [
     {
@@ -57,15 +127,59 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
       color: "text-warning"
     },
     {
-      title: "Avg Study Time",
-      value: `${Math.round(
-        students.reduce((acc, s) => acc + (s.studyTimeTodayMinutes || 0), 0) / (students.length || 1)
-      )} min`,
-      change: "",
-      trend: "up",
-      icon: Clock,
-      color: "text-success"
+  title: "Avg Study Time",
+  value: (() => {
+    // Only include students who actually studied today
+    const activeStudents = students.filter(s => s.studyTimeTodayMinutes && s.studyTimeTodayMinutes > 0);
+
+    // Calculate total time spent today by all students
+    const totalTime = activeStudents.reduce(
+      (acc, s) => acc + (s.studyTimeTodayMinutes || 0),
+      0
+    );
+
+    // Compute average time (avoid division by zero)
+    const avgMinutes = activeStudents.length > 0 ? totalTime / activeStudents.length : 0;
+
+    // Show hours if large enough, else show minutes
+    if (avgMinutes >= 60) {
+      const hours = (avgMinutes / 360).toFixed(1);
+      return `${hours} min`;
+    } else {
+      return `${Math.round(avgMinutes)} min`;
     }
+  })(),
+
+  change: (() => {
+    // Example: compare to yesterday (if available)
+    const avgToday =
+      students.reduce((acc, s) => acc + (s.studyTimeTodayMinutes || 0), 0) /
+      (students.length || 1);
+    const avgYesterday =
+      students.reduce((acc, s) => acc + (s.studyTimeYesterdayMinutes || 0), 0) /
+      (students.length || 1);
+
+    if (!avgYesterday) return "+0%";
+
+    const diff = ((avgToday - avgYesterday) / avgYesterday) * 100;
+    const sign = diff >= 0 ? "+" : "-";
+    return `${sign}${Math.abs(diff).toFixed(1)}%`;
+  })(),
+
+  trend: (() => {
+    const avgToday =
+      students.reduce((acc, s) => acc + (s.studyTimeTodayMinutes || 0), 0) /
+      (students.length || 1);
+    const avgYesterday =
+      students.reduce((acc, s) => acc + (s.studyTimeYesterdayMinutes || 0), 0) /
+      (students.length || 1);
+    return avgToday >= avgYesterday ? "up" : "down";
+  })(),
+
+  icon: Clock,
+  color: "text-success"
+}
+
   ];
 
   const topicNames = ["Quantitative Aptitude", "Logical Reasoning & DI", "Verbal Ability & RC"] as const;
@@ -105,11 +219,11 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
             <p className="text-muted-foreground mt-1">{classData.name} • {classData.totalStudents} students</p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline">
+            <Button variant="outline" onClick={exportReport}>
               <Download className="w-4 h-4 mr-2" />
               Export Report
             </Button>
-            <Button className="btn-gradient">
+            <Button className="btn-gradient" onClick={generateClassReport}>
               <FileText className="w-4 h-4 mr-2" />
               Generate Report
             </Button>
@@ -229,11 +343,11 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
                             <p className="font-semibold">{student.studyTimeTodayMinutes ?? 0}min</p>
                           </div>
                           <div className="flex space-x-2">
-                            <Button size="sm" variant="outline">
+                            <Button size="sm" variant="outline" onClick={() => viewStudent(student)}>
                               <Eye className="w-4 h-4 mr-1" />
                               View
                             </Button>
-                            <Button size="sm" variant="outline">
+                            <Button size="sm" variant="outline" onClick={() => generateStudentReport(student)}>
                               <FileText className="w-4 h-4 mr-1" />
                               Report
                             </Button>
@@ -266,45 +380,44 @@ export const TeacherDashboard = ({ classData }: TeacherDashboardProps) => {
           <TabsContent value="analytics">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="card-elevated border-0">
-  <CardHeader>
-    <CardTitle>Learning Trends</CardTitle>
-  </CardHeader>
-  <CardContent>
-    <div className="h-64">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={[
-            { day: "Mon", progress: 45 },
-            { day: "Tue", progress: 52 },
-            { day: "Wed", progress: 60 },
-            { day: "Thu", progress: 65 },
-            { day: "Fri", progress: 70 },
-            { day: "Sat", progress: 75 },
-            { day: "Sun", progress: 80 },
-          ]}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="day" />
-          <YAxis domain={[0, 100]} />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="progress"
-            stroke="#4F46E5" // Indigo for LearnWise theme
-            strokeWidth={3}
-            dot={{ r: 5 }}
-            activeDot={{ r: 7 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  </CardContent>
-</Card>
+                <CardHeader>
+                  <CardTitle>Learning Trends</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={[
+                          { day: "Mon", progress: 45 },
+                          { day: "Tue", progress: 52 },
+                          { day: "Wed", progress: 60 },
+                          { day: "Thu", progress: 65 },
+                          { day: "Fri", progress: 70 },
+                          { day: "Sat", progress: 75 },
+                          { day: "Sun", progress: 80 },
+                        ]}
+                        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="day" />
+                        <YAxis domain={[0, 100]} />
+                        <Tooltip />
+                        <Legend />
+                        <Line
+                          type="monotone"
+                          dataKey="progress"
+                          stroke="#4F46E5"
+                          strokeWidth={3}
+                          dot={{ r: 5 }}
+                          activeDot={{ r: 7 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
 
-
-              {/* Engagement Metrics (Now Dynamic) */}
+              {/* Engagement Metrics */}
               <Card className="card-elevated border-0">
                 <CardHeader>
                   <CardTitle>Engagement Metrics</CardTitle>
