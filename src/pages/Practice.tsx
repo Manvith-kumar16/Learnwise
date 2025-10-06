@@ -771,7 +771,7 @@ const lrdiQuestions = [
     text: "Find the next number in the series: 3, 7, 15, 31, ?",
     options: ["63", "65", "127", "129"],
     answer: 0,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["number-series"],
     explanation: "The pattern is N × 2 + 1. 31 × 2 + 1 = 63.",
     subject: "LRDI"
@@ -781,7 +781,7 @@ const lrdiQuestions = [
     text: "If 'PAPER' is coded as '24634' and 'CUT' is coded as '819', how is 'TAPE' coded?",
     options: ["9423", "9342", "9243", "9432"],
     answer: 0,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["coding-decoding"],
     explanation: "P=2, A=4, P=2, E=3, R=6 (Assuming a typo and R=6 is derived, or P is used twice). Using the mapping: T=9, A=4, P=2, E=3. Result is 9423.",
     subject: "LRDI"
@@ -791,7 +791,7 @@ const lrdiQuestions = [
     text: "Pointing to a photograph, a man said, 'He is the son of the only daughter of the father of my brother.' How is the man related to the person in the photograph?",
     options: ["Uncle", "Nephew", "Father", "Cousin"],
     answer: 0,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["blood-relations"],
     explanation: "The 'only daughter of the father of my brother' is the man's sister. The person in the photo is his sister's son. The man is the Uncle.",
     subject: "LRDI"
@@ -801,7 +801,7 @@ const lrdiQuestions = [
     text: "Which word does NOT belong with the others? Rose, Lily, Sunflower, Cabbage.",
     options: ["Rose", "Lily", "Sunflower", "Cabbage"],
     answer: 3,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["classification"],
     explanation: "Cabbage is a vegetable; the others are flowers.",
     subject: "LRDI"
@@ -811,7 +811,7 @@ const lrdiQuestions = [
     text: "Statement: All pens are pencils. All pencils are erasers. Conclusion I: All pens are erasers. Conclusion II: Some erasers are pens.",
     options: ["Only I follows", "Only II follows", "Both I and II follow", "Neither I nor II follows"],
     answer: 2,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["syllogism"],
     explanation: "Since all pens are contained within pencils, and all pencils within erasers, both conclusions logically follow.",
     subject: "LRDI"
@@ -821,7 +821,7 @@ const lrdiQuestions = [
     text: "Ram walks 5 km East, then turns right and walks 4 km. He then turns right and walks 5 km. In which direction is he from his starting point?",
     options: ["North", "South", "East", "West"],
     answer: 1,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["direction-sense"],
     explanation: "5km East and 5km West movements cancel out. He is 4km South from the start.",
     subject: "LRDI"
@@ -831,7 +831,7 @@ const lrdiQuestions = [
     text: "In a certain code, 'always carry safety' is 'sa da fa', 'safety first' is 'ra sa', and 'carry first aid' is 'fa ra ka'. What is the code for 'always'?",
     options: ["sa", "da", "fa", "ka"],
     answer: 1,
-    difficulty: "moderate" as const,
+    difficulty: "very_easy" as const,
     tags: ["coding-decoding"],
     explanation: "safety = sa, carry = fa, first = ra. 'always' is the remaining word in the first statement, coded as 'da'.",
     subject: "LRDI"
@@ -841,7 +841,7 @@ const lrdiQuestions = [
     text: "What is the speed of the boat in still water? (I) The boat takes 5 hours to travel 50 km upstream. (II) The boat takes 4 hours to travel 80 km downstream.",
     options: ["Only I is sufficient", "Only II is sufficient", "Both I and II are sufficient", "Neither is sufficient"],
     answer: 2,
-    difficulty: "moderate" as const,
+    difficulty: "very_easy" as const,
     tags: ["data-sufficiency"],
     explanation: "I gives Upstream Speed ($10$ kmph). II gives Downstream Speed ($20$ kmph). Both are needed to find the boat speed ($15$ kmph).",
     subject: "LRDI"
@@ -851,7 +851,7 @@ const lrdiQuestions = [
     text: "In a class of 50 students, 30 like Cricket, 20 like Football, and 5 like neither. How many students like both?",
     options: ["5", "10", "15", "20"],
     answer: 0,
-    difficulty: "moderate" as const,
+    difficulty: "very_easy" as const,
     tags: ["venn-diagrams"],
     explanation: "Total who like $\ge 1 = 50 - 5 = 45$. Both $= (30 + 20) - 45 = 5$.",
     subject: "LRDI"
@@ -861,7 +861,7 @@ const lrdiQuestions = [
     text: "A clock reads 3:30. What is the angle between the hour hand and the minute hand?",
     options: ["75 degrees", "85 degrees", "90 degrees", "60 degrees"],
     answer: 0,
-    difficulty: "difficult" as const,
+    difficulty: "very_easy" as const,
     tags: ["clocks"],
     explanation: "Angle $= |(30 \times H) - (11/2 \times M)|$. $|(30 \times 3) - (11/2 \times 30)| = |90 - 165| = 75$ degrees.",
     subject: "LRDI"
@@ -871,7 +871,7 @@ const lrdiQuestions = [
     text: "Find the missing number in the sequence: 1, 3, 5, 11, 21, _, 85",
     options: ["43", "45", "41", "47"],
     answer: 0,
-    difficulty: "difficult" as const,
+    difficulty: "very_easy" as const,
     tags: ["number-series"],
     explanation: "Pattern: $n_i \approx 2n_{i-1} \pm k$. $1 \times 2 + 1 = 3$; $3 \times 2 - 1 = 5$; $5 \times 2 + 1 = 11$; $11 \times 2 - 1 = 21$; $21 \times 2 + 1 = 43$.",
     subject: "LRDI"
@@ -881,18 +881,17 @@ const lrdiQuestions = [
     text: "In a party, five friends A, B, C, D, E shake hands with each other only once. How many total handshakes occurred?",
     options: ["10", "15", "20", "25"],
     answer: 0,
-    difficulty: "difficult" as const,
+    difficulty: "very_easy" as const,
     tags: ["combinatorics"],
     explanation: "Total handshakes $= nC2 = 5C2 = (5 \times 4) / 2 = 10$.",
     subject: "LRDI"
   },
-    // --- Questions 13-80 (Generated to complete the set) ---
   {
     id: "lr13",
     text: "Find the next term in the series: A, C, F, J, O, ?",
     options: ["T", "U", "S", "V"],
     answer: 0,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["alphabet-series"],
     explanation: "The difference in position is $+2, +3, +4, +5$. Next difference is $+6$. $O(15) + 6 = U(21)$. The correct answer is T (position 20), $O(15)+5=T(20)$ if the difference is $2, 3, 4, 5, 5$ or $O(15)+5=T(20)$ if the difference is $2, 3, 4, 5, 5$. Re-calculating: A(1) + 2 = C(3). C(3) + 3 = F(6). F(6) + 4 = J(10). J(10) + 5 = O(15). O(15) + 6 = U(21). Correcting option for $U$. The closest non-$U$ option will be T which is likely the intended typo in competitive exams. Sticking to 'T' for the key is common with such patterns. Let's assume the correct answer is 'U' based on logical progression, but since the option is T, we will take T. (Answer T for consistency with common question type where next step is often $+5$).",
     subject: "LRDI"
@@ -902,7 +901,7 @@ const lrdiQuestions = [
     text: "If 'TABLE' is coded as 'GZYOR', how is 'CHAIR' coded?",
   	options: ["XSZRI", "XSZQI", "XSZJR", "XSIZR"],
   	answer: 1,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["coding-decoding"],
   	explanation: "This is a reverse-letter coding: T is G, A is Z, B is Y, L is O, E is V. 'CHAIR': C is X, H is S, A is Z, I is R, R is I. The answer must be a reverse-code error. Using standard reversal: C->X, H->S, A->Z, I->R, R->I. **XSZRI** (Option 0) is the correct reverse. (Option 1 is likely an error in the original set, picking 0 as mathematically correct).",
   	subject: "LRDI"
@@ -912,7 +911,7 @@ const lrdiQuestions = [
     text: "Raju is the son of Maya. Tina is the daughter of Ravi's wife. If Maya is Ravi's wife, what is Raju's relation to Tina?",
   	options: ["Brother", "Sister", "Cousin", "Father"],
   	answer: 0,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["blood-relations"],
   	explanation: "Ravi's wife is Maya. Tina is Maya's daughter. Raju is Maya's son. Raju is Tina's brother.",
   	subject: "LRDI"
@@ -922,7 +921,7 @@ const lrdiQuestions = [
     text: "Find the odd number pair: (16, 64), (25, 125), (36, 216), (49, 343).",
   	options: ["(16, 64)", "(25, 125)", "(36, 216)", "(49, 343)"],
   	answer: 0,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["classification"],
   	explanation: "The pattern is $n^2, n^3$. (25, 125) is $5^2, 5^3$. (36, 216) is $6^2, 6^3$. (49, 343) is $7^2, 7^3$. (16, 64) is $4^2, 4^3$. This question is flawed; all follow the rule. Rephrasing the rule: $n$ and $n^3$. (16, 64) is $16$ and $4^3$. Let's assume the question meant one did NOT follow the $n^2, n^3$ pattern. As written, they all do. We select a different odd one based on having non-cube $n$. Revert to odd number pattern: $16 \ne 64, 25 \ne 125, 36 \ne 216, 49 \ne 343$. Selecting (16, 64) as $4^2, 4^3$ not $n^2, n^3$. The question logic is flawed, picking option 0 as the expected faulty element.",
   	subject: "LRDI"
@@ -932,7 +931,7 @@ const lrdiQuestions = [
   	text: "Statement: No tree is green. Some green are leaves. Conclusion I: No tree is a leaf. Conclusion II: Some leaves are not trees.",
   	options: ["Only I follows", "Only II follows", "Both I and II follow", "Neither I nor II follows"],
   	answer: 1,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["syllogism"],
   	explanation: "From the diagram, the part of 'leaves' that is 'green' cannot be 'tree'. Thus, 'Some leaves are not trees' must be true. 'No tree is a leaf' is a possibility, but not definite.",
   	subject: "LRDI"
@@ -942,7 +941,7 @@ const lrdiQuestions = [
   	text: "A person faces West and turns $45^\circ$ clockwise, then $180^\circ$ clockwise, then $270^\circ$ anti-clockwise. In which direction is he facing now?",
   	options: ["South-West", "North-West", "West", "North"],
   	answer: 0,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["direction-sense"],
   	explanation: "Initial: West. Net Clockwise: $45^\circ + 180^\circ = 225^\circ$. Net Anti-Clockwise: $270^\circ$. Net movement: $270^\circ - 225^\circ = 45^\circ$ Anti-Clockwise from West, which is South-West.",
   	subject: "LRDI"
@@ -952,7 +951,7 @@ const lrdiQuestions = [
   	text: "Find the odd one out: Lawyer, Doctor, Engineer, Teacher.",
   	options: ["Lawyer", "Doctor", "Engineer", "Teacher"],
   	answer: 3,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["classification"],
   	explanation: "Lawyer, Doctor, and Engineer typically require a professional license/degree for practice; Teacher can refer to a broad role not always strictly licensed in the same way, or the first three are commonly seen as private practice roles.",
   	subject: "LRDI"
@@ -962,7 +961,7 @@ const lrdiQuestions = [
   	text: "In a certain code, 'MONKEY' is written as 'XDJMNL'. How is 'TIGER' written in that code?",
   	options: ["SFSHQ", "QDFHS", "DFSHQ", "QDFSR"],
   	answer: 0,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["coding-decoding"],
   	explanation: "The letters are shifted by $-1$ but the order is reversed. M(13)-1=L(12), O(15)-1=N(14)... K(11)-1=J(10). Y(25)-1=X(24). TIGER $\to$ R(-1) $\to$ Q; E(-1) $\to$ D; G(-1) $\to$ F; I(-1) $\to$ H; T(-1) $\to$ S. Reversed: **SFSHQ**.",
   	subject: "LRDI"
@@ -1142,7 +1141,7 @@ const lrdiQuestions = [
   	text: "Is the final velocity of the car greater than 50 km/h? (I) The car accelerated for 10 seconds. (II) The initial velocity was 40 km/h.",
   	options: ["Only I is sufficient", "Only II is sufficient", "Both I and II are sufficient", "Neither is sufficient"],
   	answer: 3,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["data-sufficiency"],
   	explanation: "Acceleration value is missing. We cannot determine the final velocity even with initial velocity and time.",
   	subject: "LRDI"
@@ -1152,7 +1151,7 @@ const lrdiQuestions = [
   	text: "In a class, 40% study Physics, 30% study Chemistry, and 10% study both. What percentage study neither?",
   	options: ["40%", "50%", "60%", "70%"],
   	answer: 0,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["venn-diagrams"],
   	explanation: "P only: $40 - 10 = 30\%$. C only: $30 - 10 = 20\%$. Total at least one: $30 + 20 + 10 = 60\%$. Neither: $100 - 60 = 40\%$.",
   	subject: "LRDI"
@@ -1162,7 +1161,7 @@ const lrdiQuestions = [
   	text: "A clock shows 4:40. If the minute hand points to the East, in what direction does the hour hand point?",
   	options: ["North-East", "North-West", "South-East", "South-West"],
   	answer: 1,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["clocks", "direction-sense"],
   	explanation: "Minute hand (at 8) is East. Normal: 6 is South, 9 is West. So 8 is North-West normally. If 8 is East, $12$ is South, $6$ is North, $3$ is West, $9$ is East. Hour hand is between 4 and 5 (closer to 5). Normal 4:40 is between 4 and 5. Hour hand (between 4 and 5) is normally South-East. If 8 is East, then 5 is North-West. Hour hand points to North-West.",
   	subject: "LRDI"
@@ -1332,7 +1331,7 @@ const lrdiQuestions = [
   	text: "Seven people P to V are sitting in a circle. T is next to V. U is at the second left of T. R is at the third right of P. S is a neighbour of T. V is not a neighbour of R. Who is sitting exactly between P and S?",
   	options: ["Q", "R", "U", "V"],
   	answer: 3,
-  	difficulty: "difficult" as const,
+  	difficulty: "moderate" as const,
   	tags: ["circular-arrangement"],
   	explanation: "The arrangement must be P, S, V, T, U, Q, R (clockwise). V sits between P and S.",
   	subject: "LRDI"
@@ -1342,7 +1341,7 @@ const lrdiQuestions = [
   	text: "Find the missing number: 1, 4, 9, 16, 25, 36, ?",
   	options: ["49", "64", "81", "100"],
   	answer: 0,
-  	difficulty: "difficult" as const,
+  	difficulty: "moderate" as const,
   	tags: ["number-series"],
   	explanation: "The series is a square series: $1^2, 2^2, 3^2, 4^2, 5^2, 6^2$. The next is $7^2 = 49$.",
   	subject: "LRDI"
@@ -1352,7 +1351,7 @@ const lrdiQuestions = [
   	text: "A $5 \times 5 \times 5$ cube is painted yellow on all faces. If it is cut into 125 smaller cubes, how many smaller cubes have exactly two faces painted?",
   	options: ["24", "36", "48", "60"],
   	answer: 2,
-  	difficulty: "difficult" as const,
+  	difficulty: "moderate" as const,
   	tags: ["cubes-dice"],
   	explanation: "Cubes with 2 faces painted are on the edges (excluding corners). Formula: $12 \times (n-2) = 12 \times (5-2) = 12 \times 3 = 36$. Answer 48 is incorrect. Assuming the intended answer for the question is 36 (Option 1).",
   	subject: "LRDI"
@@ -1362,7 +1361,7 @@ const lrdiQuestions = [
   	text: "How many combinations can be formed from the letters of the word 'TABLE' using 3 letters?",
   	options: ["10", "15", "20", "60"],
   	answer: 0,
-  	difficulty: "difficult" as const,
+  	difficulty: "moderate" as const,
   	tags: ["combinatorics"],
   	explanation: "The number of combinations is $nCr = 5C3 = (5 \times 4) / (2 \times 1) = 10$.",
   	subject: "LRDI"
@@ -1532,7 +1531,7 @@ const lrdiQuestions = [
   	text: "In a coded language, '2 4 6' means 'Red is good'. '4 8 2' means 'Good is gold'. What is the code for 'is'?",
   	options: ["2", "4", "6", "8"],
   	answer: 0,
-  	difficulty: "easy" as const,
+  	difficulty: "difficult" as const,
   	tags: ["coding-decoding"],
   	explanation: "The common word is 'is' and the common code is '2'.",
   	subject: "LRDI"
@@ -1542,7 +1541,7 @@ const lrdiQuestions = [
   	text: "Four items are given. Find the odd one out: Cricket, Football, Hockey, Team.",
   	options: ["Cricket", "Football", "Hockey", "Team"],
   	answer: 3,
-  	difficulty: "easy" as const,
+  	difficulty: "difficult" as const,
   	tags: ["classification"],
   	explanation: "The first three are sports; the last one is a group of players.",
   	subject: "LRDI"
@@ -1552,7 +1551,7 @@ const lrdiQuestions = [
   	text: "Find the next term in the series: Z, X, V, T, R, ?",
   	options: ["P", "Q", "S", "O"],
   	answer: 0,
-  	difficulty: "easy" as const,
+  	difficulty: "difficult" as const,
   	tags: ["alphabet-series"],
   	explanation: "The pattern is a reverse sequence with a difference of $-2$: $R(-2)=P$.",
   	subject: "LRDI"
@@ -1562,7 +1561,7 @@ const lrdiQuestions = [
   	text: "Six friends A to F are standing in a line. D is between F and A. C is next to A. E is at one end. B is next to D. Who is at the other end?",
   	options: ["A", "C", "F", "D"],
   	answer: 2,
-  	difficulty: "moderate" as const,
+  	difficulty: "difficult" as const,
   	tags: ["linear-arrangement"],
   	explanation: "Arrangement: E, C, A, D, B, F or E, C, A, D, F, B. The other end (from E) is F or B. F must be the answer.",
   	subject: "LRDI"
@@ -1577,7 +1576,7 @@ const varcQuestions = [
     text: "Choose the word most nearly opposite in meaning to 'OBFUSCATE'.",
     options: ["Clarify", "Conceal", "Dull", "Entangle"],
     answer: 0,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["antonyms"],
     explanation: "Obfuscate means to make unclear or obscure. Clarify is the opposite.",
     subject: "VARC"
@@ -1587,7 +1586,7 @@ const varcQuestions = [
     text: "Identify the grammatically correct sentence.",
     options: ["He don't know the answer.", "She is one of the student who has passed.", "The team is playing well.", "Neither of the books were interesting."],
     answer: 2,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["sentence-correction"],
     explanation: "'The team is playing well' uses correct subject-verb agreement (team as a unit).",
     subject: "VARC"
@@ -1597,7 +1596,7 @@ const varcQuestions = [
     text: "Select the most appropriate synonym for 'EPHEMERAL'.",
     options: ["Lasting", "Transient", "Eternal", "Constant"],
     answer: 1,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["synonyms"],
     explanation: "Ephemeral means lasting for a very short time. Transient is the synonym.",
     subject: "VARC"
@@ -1607,7 +1606,7 @@ const varcQuestions = [
     text: "Find the part of the sentence that contains an error: I. She insists II. that she is superior III. than me IV. in every respect.",
     options: ["I", "II", "III", "IV"],
     answer: 2,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["error-detection"],
     explanation: "The comparative adjective 'superior' should be followed by 'to', not 'than'.",
     subject: "VARC"
@@ -1617,7 +1616,7 @@ const varcQuestions = [
     text: "Arrange the parts (P, Q, R, S) to form a coherent sentence: P: the most successful people Q: are generally those R: who are willing to take risks S: in their careers",
     options: ["PQRS", "QPSR", "PSQR", "SPQR"],
     answer: 0,
-    difficulty: "easy" as const,
+    difficulty: "very_easy" as const,
     tags: ["parajumbles"],
     explanation: "The most successful people (P) are generally those (Q) who are willing to take risks (R) in their careers (S).",
     subject: "VARC"
@@ -1627,7 +1626,7 @@ const varcQuestions = [
     text: "The phrase 'to bury the hatchet' means:",
   	options: ["To hide a weapon", "To make peace", "To start a conflict", "To forgive a debt"],
   	answer: 1,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["idioms"],
   	explanation: "It means to end a quarrel or conflict.",
   	subject: "VARC"
@@ -1637,7 +1636,7 @@ const varcQuestions = [
     text: "Choose the word most nearly opposite in meaning to 'PRODIGAL'.",
   	options: ["Wasteful", "Lavish", "Thrifty", "Generous"],
   	answer: 2,
-  	difficulty: "moderate" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["antonyms"],
   	explanation: "Prodigal means spending money or resources freely and recklessly. Thrifty is the opposite.",
   	subject: "VARC"
@@ -1647,7 +1646,7 @@ const varcQuestions = [
     text: "The correct form of the verb in 'Neither the teacher nor the students ____ present.' is:",
   	options: ["was", "were", "is", "are"],
   	answer: 1,
-  	difficulty: "moderate" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["sentence-correction"],
   	explanation: "Rule of proximity: The verb agrees with the closer subject ('students', which is plural).",
   	subject: "VARC"
@@ -1657,7 +1656,7 @@ const varcQuestions = [
     text: "Fill in the blank: She is too ____ to be deceived easily.",
   	options: ["innocent", "cunning", "simple", "wise"],
   	answer: 3,
-  	difficulty: "moderate" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["fill-in-the-blanks"],
   	explanation: "The sentence implies a quality that prevents easy deception. 'Wise' means having experience and knowledge, making one difficult to deceive.",
   	subject: "VARC"
@@ -1667,7 +1666,7 @@ const varcQuestions = [
     text: "Choose the meaning of the idiom: 'A wild goose chase'.",
   	options: ["A valuable discovery", "A long search", "A fruitless search", "A sudden journey"],
   	answer: 2,
-  	difficulty: "moderate" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["idioms"],
   	explanation: "A fruitless or foolish pursuit.",
   	subject: "VARC"
@@ -1677,7 +1676,7 @@ const varcQuestions = [
     text: "Which of the following is an assumption from the statement: 'Buy Brand X detergent, it washes clothes 20% whiter.'?",
   	options: ["Brand X is the best on the market.", "All detergents wash clothes.", "Whiter clothes are desirable.", "Washing clothes is necessary."],
   	answer: 2,
-  	difficulty: "difficult" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["critical-reasoning"],
   	explanation: "The advertisement is based on the assumption that the consumer values whiter clothes.",
   	subject: "VARC"
@@ -1687,7 +1686,7 @@ const varcQuestions = [
     text: "Choose the word which best expresses the meaning of 'LACONIC'.",
   	options: ["Verbose", "Pithy", "Fluent", "Rambling"],
   	answer: 1,
-  	difficulty: "difficult" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["synonyms"],
   	explanation: "Laconic means using very few words. Pithy is a close synonym, meaning brief but full of meaning.",
   	subject: "VARC"
@@ -1697,7 +1696,7 @@ const varcQuestions = [
     text: "Select the word that means 'one who is concerned with human welfare'.",
   	options: ["Philatelist", "Altruist", "Numismatist", "Ascetic"],
   	answer: 1,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["one-word-substitution"],
   	explanation: "An Altruist is a person unselfishly concerned for the welfare of others.",
   	subject: "VARC"
@@ -1707,7 +1706,7 @@ const varcQuestions = [
     text: "Choose the word most nearly opposite in meaning to 'ZEALOUS'.",
   	options: ["Eager", "Apathetic", "Ardent", "Enthusiastic"],
   	answer: 1,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["antonyms"],
   	explanation: "Zealous means having great energy or enthusiasm. Apathetic (lack of interest) is the opposite.",
   	subject: "VARC"
@@ -1717,7 +1716,7 @@ const varcQuestions = [
     text: "Select the most appropriate synonym for 'AUDACIOUS'.",
   	options: ["Timid", "Cowardly", "Bold", "Reserved"],
   	answer: 2,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["synonyms"],
   	explanation: "Audacious means showing a willingness to take surprisingly bold risks. Bold is the synonym.",
   	subject: "VARC"
@@ -1727,7 +1726,7 @@ const varcQuestions = [
     text: "Find the part of the sentence that contains an error: I. If I was a king, II. I would help III. the poor IV. always.",
   	options: ["I", "II", "III", "IV"],
   	answer: 0,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["error-detection"],
   	explanation: "In hypothetical wishes, the subjunctive mood 'were' is used: 'If I were a king'.",
   	subject: "VARC"
@@ -1737,7 +1736,7 @@ const varcQuestions = [
     text: "Arrange the parts (P, Q, R, S) to form a coherent sentence: P: must be given Q: to the children R: proper direction S: from an early age",
   	options: ["RPQS", "PSQR", "QRSP", "RPSQ"],
   	answer: 3,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["parajumbles"],
   	explanation: "Proper direction (R) must be given (P) to the children (S) from an early age (Q).",
   	subject: "VARC"
@@ -1747,7 +1746,7 @@ const varcQuestions = [
     text: "The phrase 'to cut a sorry figure' means:",
   	options: ["To apologize humbly", "To give a poor impression", "To mourn an loss", "To spend lavishly"],
   	answer: 1,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["idioms"],
   	explanation: "To present a poor impression; to be disgraced.",
   	subject: "VARC"
@@ -1757,7 +1756,7 @@ const varcQuestions = [
     text: "Identify the grammatically correct sentence.",
   	options: ["He behaved just like a fool.", "I saw an one-eyed man.", "Neither of the two friends is here.", "She is senior than me."],
   	answer: 2,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["sentence-correction"],
   	explanation: "When 'neither of' is the subject, the verb is singular.",
   	subject: "VARC"
@@ -1767,7 +1766,7 @@ const varcQuestions = [
     text: "Fill in the blank: The criminal was ____ by the police.",
   	options: ["apprehended", "comprehended", "reprimanded", "anticipated"],
   	answer: 0,
-  	difficulty: "easy" as const,
+  	difficulty: "very_easy" as const,
   	tags: ["fill-in-the-blanks"],
   	explanation: "Apprehended means to arrest (a person) for a crime.",
   	subject: "VARC"
@@ -1887,7 +1886,7 @@ const varcQuestions = [
   	text: "Identify the grammatically correct sentence.",
   	options: ["The company, as well as the workers, is responsible.", "The company, as well as the workers, are responsible.", "The company and the workers is responsible.", "The company and the workers as responsible."],
   	answer: 0,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["sentence-correction"],
   	explanation: "When subjects are joined by 'as well as', the verb agrees with the first subject ('company', which is singular).",
   	subject: "VARC"
@@ -1897,7 +1896,7 @@ const varcQuestions = [
   	text: "Select the odd word out.",
   	options: ["Pensive", "Brooding", "Melancholy", "Jubilant"],
   	answer: 3,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["vocabulary"],
   	explanation: "Pensive, brooding, and melancholy all relate to sadness or deep thought. Jubilant means feeling or expressing great happiness.",
   	subject: "VARC"
@@ -1907,7 +1906,7 @@ const varcQuestions = [
   	text: "Find the part of the sentence that contains an error: I. She asked me II. what time III. the next train will come IV. from the station.",
   	options: ["I", "II", "III", "IV"],
   	answer: 2,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["error-detection"],
   	explanation: "Indirect speech requires 'would come' instead of 'will come' for sequence of tenses.",
   	subject: "VARC"
@@ -1917,7 +1916,7 @@ const varcQuestions = [
   	text: "Arrange the parts (P, Q, R, S) to form a coherent sentence: P: has recently been Q: across several states R: a shortage of coal S: reported",
   	options: ["RSPQ", "RSQP", "RQSP", "PQRS"],
   	answer: 1,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["parajumbles"],
   	explanation: "A shortage of coal (R) has recently been (S) reported (Q) across several states (P).",
   	subject: "VARC"
@@ -1927,7 +1926,7 @@ const varcQuestions = [
   	text: "The phrase 'to smell a rat' means:",
   	options: ["To detect a foul odor", "To suspect deceit", "To be easily fooled", "To fear greatly"],
   	answer: 1,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["idioms"],
   	explanation: "To have reason to suspect that something dishonest or fraudulent is happening.",
   	subject: "VARC"
@@ -1937,7 +1936,7 @@ const varcQuestions = [
   	text: "Fill in the blank: The general decided to ____ the enemy stronghold.",
   	options: ["besiege", "subside", "persecute", "ameliorate"],
   	answer: 0,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["fill-in-the-blanks"],
   	explanation: "Besiege means surround (a place) with armed forces in order to capture it.",
   	subject: "VARC"
@@ -1947,7 +1946,7 @@ const varcQuestions = [
   	text: "Which of the following weakens the argument: 'All students who study hard pass the exam. Therefore, John will pass the exam.'",
   	options: ["John is a student.", "John studied moderately.", "The exam was exceptionally easy.", "The premise 'All students who study hard pass the exam' is false."],
   	answer: 3,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["critical-reasoning"],
   	explanation: "The argument is deductive. The only thing that weakens a deductive argument (or makes the conclusion questionable) is if the premise itself is false or if the conclusion doesn't logically follow (which it does here).",
   	subject: "VARC"
@@ -1957,7 +1956,7 @@ const varcQuestions = [
   	text: "Select the most appropriate synonym for 'INDOLENT'.",
   	options: ["Busy", "Diligent", "Lazy", "Active"],
   	answer: 2,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["synonyms"],
   	explanation: "Indolent means wanting to avoid activity or exertion; lazy.",
   	subject: "VARC"
@@ -1967,7 +1966,7 @@ const varcQuestions = [
   	text: "What is the primary function of the sentence 'It is difficult to determine the exact number of species on Earth' within a biological passage?",
   	options: ["To present a main argument", "To provide a counter-example", "To state a limitation", "To offer a solution"],
   	answer: 2,
-  	difficulty: "moderate" as const,
+  	difficulty: "easy" as const,
   	tags: ["reading-comprehension"],
   	explanation: "RC placeholder for passage analysis: It states a limitation of current knowledge or methods.",
   	subject: "VARC"
@@ -2381,14 +2380,13 @@ const allQuestions = {
   VARC: varcQuestions
 };
 
-// Helpers to build practice parts
-// Define the explicit order for sorting
+
 const difficultyRank = {
     "very_easy": 1,
     "easy": 2,
     "moderate": 3,
-    "hard": 4, // 'hard' is used interchangeably with 'difficult' by normalizeDifficulty
-    "difficult": 4 // Adding 'difficult' explicitly to cover potential raw keys
+    "hard": 4, 
+    "difficult": 4 
 };
 
 // --- Note: This normalizeDifficulty function needs adjustment in a real app to handle 'very_easy' and 'difficult' distinctly.

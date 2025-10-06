@@ -118,31 +118,6 @@ type ToastActionElement = React.ReactElement<typeof ToastAction>;
 // ------------------------------
 // Example Usage (only fires once)
 // ------------------------------
-export function ExampleToast() {
-  React.useEffect(() => {
-    const event = new CustomEvent("open-toast");
-    window.dispatchEvent(event);
-  }, []);
-
-  React.useEffect(() => {
-    const handler = () => {
-      ToastPrimitives.create({
-        id: "part-1-toast", // 👈 unique ID ensures single toast
-        children: (
-          <Toast>
-            <ToastTitle>Part 1 completed!</ToastTitle>
-            <ToastDescription>Unlocking Part 2</ToastDescription>
-            <ToastClose />
-          </Toast>
-        ),
-      });
-    };
-    window.addEventListener("open-toast", handler);
-    return () => window.removeEventListener("open-toast", handler);
-  }, []);
-
-  return null;
-}
 
 export {
   type ToastProps,

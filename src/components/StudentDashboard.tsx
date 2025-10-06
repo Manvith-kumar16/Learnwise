@@ -71,7 +71,7 @@ export const StudentDashboard = () => {
   const [animatedQuestions, setAnimatedQuestions] = useState(0);
   useEffect(() => {
     let start = 0;
-    const end = 45; // Target value for animation
+    const end = 0; // Target value for animation
     const duration = 1000; // in ms
     const increment = end / (duration / 16); // approx 60fps
     const timer = setInterval(() => {
