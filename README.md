@@ -8,7 +8,7 @@ _Empowering Learning Through Intelligent, Seamless Innovation_
 
 ---
 Live Website - https://learnwise-xi.vercel.app/
----
+___
 
 ## 🚀 Built with the tools and technologies:
 
