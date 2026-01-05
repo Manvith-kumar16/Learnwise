@@ -7,6 +7,8 @@ _Empowering Learning Through Intelligent, Seamless Innovation_
 ![languages](https://img.shields.io/github/languages/count/Manvith-kumar16/Learnwise)
 
 ---
+Live Website - https://learnwise-xi.vercel.app/
+---
 
 ## 🚀 Built with the tools and technologies:
 
